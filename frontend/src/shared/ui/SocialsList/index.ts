@@ -1,0 +1,2 @@
+export * from "./SocialsList";
+

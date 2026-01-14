@@ -1,0 +1,30 @@
+.socials-list {
+  gap: 10px;
+
+  &__link {
+    display: block;
+
+    &:hover {
+      animation: pan 0.5s infinite;
+    }
+  }
+
+  &__icon {
+    display: inline-block;
+
+    width: 36px;
+    height: 36px;
+
+    background-repeat: no-repeat;
+    background-image: url(../img/footer/footer-sprite.png);
+    border-radius: 50%;
+
+    &.twitter {
+      background-position: -107px -42px;
+    }
+
+    &.vk {
+      background-position: -157px -42px;
+    }
+  }
+}

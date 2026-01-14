@@ -1,0 +1,25 @@
+.footer {
+  padding: 1rem 1.563rem;
+}
+
+.footer-copyright {
+  font-size: 0.8rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.footer-contacts {
+  &__socials {
+    margin-top: 10px;
+  }
+
+  &__phone {
+    display: block;
+  }
+
+  &__email {
+    display: block;
+  }
+}

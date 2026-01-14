@@ -1,0 +1,19 @@
+{
+	"header": {
+		"links": {
+			"/": "Главная",
+			"/catalog": "Каталог",
+			"/about": "О магазине",
+			"/contacts": "Контакты"
+		},
+		"visible": true
+	},
+	"footer": {
+		"links": {
+			"/about": "О магазине",
+			"/catalog": "Каталог",
+			"/contacts": "Контакты"
+		},
+		"visible": true
+	}
+}

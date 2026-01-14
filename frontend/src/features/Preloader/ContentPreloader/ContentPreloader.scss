@@ -1,0 +1,37 @@
+.content-preloader {
+  position: relative;
+  margin: 0.625rem auto;
+  width: 30px;
+  height: 30px;
+
+  span {
+    position: absolute;
+
+    margin: 0;
+
+    width: 40%;
+    height: 40%;
+
+    border-radius: 50%;
+    border: 0;
+
+    animation: content-preload-spin 2s ease infinite;
+
+    &:first-child {
+      background: #19a68c;
+      animation-delay: -1.5s;
+    }
+
+    &:nth-child(2) {
+      background: #ff748b;
+      animation-delay: -1s;
+    }
+    &:nth-child(3) {
+      background: #ffb676;
+      animation-delay: -0.5s;
+    }
+    &:last-child {
+      background: #727e86;
+    }
+  }
+}

@@ -1,10 +1,13 @@
+import { RouterProvider } from "react-router";
+import router from "./routes";
+
 /**
  * Основной компонент приложения, точка входа
  */
 function App() {
 	return (
 		<div className="App">
-			<p>Hello world!</p>
+			<RouterProvider router={router} />
 		</div>
 	);
 }

@@ -1,7 +1,10 @@
+@use "@/shared/styles/keyframes";
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-size: 16px;
   font-weight: 400;
+  line-height: 1.5;
   color: #272727;
 
   font-synthesis: none;
@@ -24,9 +27,18 @@ button {
 a {
   font-weight: 500;
   text-decoration: inherit;
+  color: #727e86;
+
+  &:hover,
+  &:visited,
+  &:active {
+    text-decoration: none;
+  }
 }
 
 button {
+  background-color: transparent;
+  border: none;
   cursor: pointer;
   transition: 0.4s;
 
@@ -44,4 +56,23 @@ h1 {
 ul,
 ol {
   list-style: none;
+}
+
+section {
+  &.pt-1rem {
+    padding-top: 1rem;
+  }
+
+  &.pt-4rem {
+    padding-top: 4rem;
+  }
+}
+
+h2,
+.h2 {
+  margin-bottom: 1.5em;
+}
+
+.min-height-300 {
+  min-height: 300px;
 }

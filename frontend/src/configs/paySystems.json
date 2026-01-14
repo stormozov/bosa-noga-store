@@ -1,0 +1,32 @@
+[
+  {
+    "displayName": "PayPal",
+    "link": "#",
+    "visible": true
+  },
+  {
+    "displayName": "Visa",
+    "link": "#",
+    "visible": true
+  },
+  {
+    "displayName": "MasterCard",
+    "link": "#",
+    "visible": true
+  },
+  {
+    "displayName": "Yandex",
+    "link": "#",
+    "visible": true
+  },
+  {
+    "displayName": "WebMoney",
+    "link": "#",
+    "visible": true
+  },
+  {
+    "displayName": "Qiwi",
+    "link": "#",
+    "visible": true
+  }
+]

@@ -1,0 +1,40 @@
+.pay-systems {
+  display: flex;
+  gap: 0.313em;
+  font-size: 1rem;
+
+  &__item {
+    width: 2.875em;
+    height: 1.75em;
+
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-image: url(../img/footer/footer-sprite.png);
+    border: 2px solid #ffffff;
+    border-radius: 0.5em;
+
+    &.paypal {
+      background-position: -2px -6px;
+    }
+
+    &.master-card {
+      background-position: -54px -8px;
+    }
+
+    &.visa {
+      background-position: -104px -8px;
+    }
+
+    &.yandex {
+      background-position: -154px -8px;
+    }
+
+    &.webmoney {
+      background-position: -2px -46px;
+    }
+
+    &.qiwi {
+      background-position: -52px -46px;
+    }
+  }
+}

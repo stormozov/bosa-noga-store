@@ -1,0 +1,16 @@
+.header-controls {
+  &__widgets {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__widget {
+    margin: 0 0.625rem;
+
+    height: 2rem;
+    width: 2rem;
+
+    background-image: url(./img/header/header-controls-sprite.png);
+    background-repeat: no-repeat;
+  }
+}

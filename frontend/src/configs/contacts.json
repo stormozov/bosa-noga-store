@@ -1,0 +1,37 @@
+{
+  "phone": {
+    "main": {
+      "value": "+7 495 79 03 5 03",
+      "link": "tel:+74957903503",
+      "visible": true
+    }
+  },
+  "email": {
+    "main": {
+      "value": "office@bosanoga.ru",
+      "link": "mailto:office@bosanoga.ru",
+      "visible": true
+    }
+  },
+  "workTime": {
+    "days": "Ежедневно",
+    "time": "с 09-00 до 21-00",
+    "visible": true
+  },
+  "address": "Наш головной офис расположен в г.Москва, по адресу: Варшавское шоссе, д. 17, бизнес-центр W Plaza.",
+  "socials": {
+    "list": [
+      {
+        "displayName": "Twitter",
+        "link": "#",
+        "visible": true
+      },
+      {
+        "displayName": "VK",
+        "link": "#",
+        "visible": true
+      }
+    ],
+    "visible": true
+  }
+}

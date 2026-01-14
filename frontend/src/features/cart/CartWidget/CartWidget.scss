@@ -1,0 +1,33 @@
+.cart-widget {
+  position: relative;
+
+  &__link {
+    position: relative;
+    display: block;
+    background-position: 0 0;
+
+    &:hover {
+      animation: pan 0.8s linear infinite;
+    }
+  }
+
+  &__count {
+    position: absolute;
+    right: 0;
+    top: -5px;
+
+    display: block;
+
+    height: 21px;
+    width: 21px;
+
+    border-radius: 50%;
+    background: linear-gradient(90deg, #ff65a5 1.11%, #ff8076 100%);
+    box-shadow: 0px 2px 8px rgba(255, 101, 165, 0.6), inset 0px 1px 1px #ff8076;
+
+    font-size: 0.688em;
+    line-height: 1.3125rem;
+    text-align: center;
+    color: #ffffff;
+  }
+}
