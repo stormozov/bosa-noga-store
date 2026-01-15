@@ -29,7 +29,7 @@ export const LoadingFallback = ({
 	size = "medium",
 }: ILoadingFallbackProps) => {
 	return (
-		<div className="loading-fallback">
+		<div className="loading-fallback d-flex flex-column align-items-center justify-content-center">
 			<div
 				className={classNames(
 					"loading-fallback__spinner",

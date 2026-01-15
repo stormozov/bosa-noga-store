@@ -1,23 +1,29 @@
+// =============================================================================
+// Стили компонента списка социальных сетей
+// =============================================================================
+
 .socials-list {
+  --icon-size: 36px;
+  --animation-link: pan 0.5s infinite;
+
   gap: 10px;
 
   &__link {
     display: block;
 
     &:hover {
-      animation: pan 0.5s infinite;
+      animation: var(--animation-link);
     }
   }
 
   &__icon {
     display: inline-block;
 
-    width: 36px;
-    height: 36px;
+    width: var(--icon-size);
+    height: var(--icon-size);
 
     background-repeat: no-repeat;
     background-image: url(../img/footer/footer-sprite.png);
-    border-radius: 50%;
 
     &.twitter {
       background-position: -107px -42px;

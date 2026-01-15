@@ -26,7 +26,9 @@ export function MainBanner({ banners }: IMainBannerProps) {
 		<div className="main-banner">
 			<div className="main-banner__item" key={banner.text}>
 				<img src={banner.src} alt={banner.text} className="img-fluid" />
-				<h2 className="main-banner__item-header">{banner.text}</h2>
+				<h2 className="main-banner__item-header d-flex align-items-center justify-content-center m-0">
+					{banner.text}
+				</h2>
 			</div>
 		</div>
 	);

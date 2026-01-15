@@ -1,0 +1,29 @@
+// =============================================================================
+// Цветовые переменные
+// =============================================================================
+
+:root {
+  // Акцент
+  --color-accent: #ff8076;
+
+  // Текст
+  --color-text-primary: #272727;
+  --color-text-secondary: #727e86;
+
+  // Ссылка
+  --color-link-default: #727e86;
+  --color-link-hover: rgba(0,0,0,.7);
+  --color-link-active: #ff0000;
+
+  // Обводка
+  --color-border-primary: #dee2e6;
+  --color-border-secondary: #ced4da;
+
+  // Тень
+  --shadow-search-field: 0px 0px 10px #d4e4e6;
+  --shadow-cart-count: 0px 2px 8px rgba(255, 101, 165, 0.6),
+    inset 0px 1px 1px #ff8076;
+
+  // Фон
+  --color-bg-cart-count: linear-gradient(90deg, #ff65a5 1.11%, #ff8076 100%);
+}

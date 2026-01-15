@@ -1,11 +1,17 @@
+// =============================================================================
+// Стили компонента виджета поиска
+// =============================================================================
+
 .search-widget {
+  --animation-icon-hover: pan 0.8s linear infinite;
+
   &__expander {
     position: relative;
     z-index: 1;
     background-position: -64px 0;
 
     &:hover {
-      animation: pan 0.8s linear infinite;
+      animation: var(--animation-icon-hover);
     }
   }
 }

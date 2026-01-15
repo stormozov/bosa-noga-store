@@ -1,37 +1,51 @@
+// =============================================================================
+// Стили компонента прелоадера содержимого
+// =============================================================================
+
 .content-preloader {
+  --preloader-size: 30px;
+  --circle-size: 40%;
+  --circle-color-first: #19a68c;
+  --circle-color-second: #ff748b;
+  --circle-color-third: #ffb676;
+  --circle-color-fourth: #727e86;
+  --animation: content-preload-spin 2s ease infinite;
+
   position: relative;
   margin: 0.625rem auto;
-  width: 30px;
-  height: 30px;
+  width: var(--preloader-size);
+  height: var(--preloader-size);
 
   span {
     position: absolute;
 
     margin: 0;
 
-    width: 40%;
-    height: 40%;
+    width: var(--circle-size);
+    height: var(--circle-size);
 
     border-radius: 50%;
     border: 0;
 
-    animation: content-preload-spin 2s ease infinite;
+    animation: var(--animation);
 
     &:first-child {
-      background: #19a68c;
+      background: var(--circle-color-first);
       animation-delay: -1.5s;
     }
 
     &:nth-child(2) {
-      background: #ff748b;
+      background: var(--circle-color-second);
       animation-delay: -1s;
     }
+
     &:nth-child(3) {
-      background: #ffb676;
+      background: var(--circle-color-third);
       animation-delay: -0.5s;
     }
+
     &:last-child {
-      background: #727e86;
+      background: var(--circle-color-fourth);
     }
   }
 }

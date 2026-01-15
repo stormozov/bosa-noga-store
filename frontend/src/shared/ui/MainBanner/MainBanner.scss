@@ -1,28 +1,33 @@
+// =============================================================================
+// Стили компонента основного баннера
+// =============================================================================
+
 .main-banner {
+  --header-width: 487px;
+  --header-height: 6.125rem;
+  --header-font-size: 3rem;
+
   &__item {
     position: relative;
   }
 
   &__item-header {
     position: absolute;
-    z-index: 5;
     right: 1px;
-    bottom: 34px;
-  
-    width: 487px;
-  
+    bottom: 40px;
+    z-index: 5;
+
+    width: var(--header-width);
+    height: var(--header-height);
+
     background: linear-gradient(
       270deg,
       rgba(161, 179, 191, 0.8) 72.59%,
       rgba(161, 179, 191, 0) 98.05%
     );
-  
-    font-size: 3rem;
+
+    font-size: var(--header-font-size);
     font-weight: bold;
-    line-height: 6.125rem;
-    text-align: center;
-    color: #ffffff;
+    color: var(--white);
   }
 }
-
-

@@ -1,16 +1,25 @@
+// =============================================================================
+// Стили компонента платежных систем
+// =============================================================================
+
 .pay-systems {
+  --base-size: 1rem;
+  --item-width: 2.875em;
+  --item-height: 1.75em;
+  --sprite-img: url(../img/footer/footer-sprite.png);
+
   display: flex;
   gap: 0.313em;
-  font-size: 1rem;
+  font-size: var(--base-size);
 
   &__item {
-    width: 2.875em;
-    height: 1.75em;
+    width: var(--item-width);
+    height: var(--item-height);
 
-    background-color: #ffffff;
+    background-color: var(--white);
     background-repeat: no-repeat;
-    background-image: url(../img/footer/footer-sprite.png);
-    border: 2px solid #ffffff;
+    background-image: var(--sprite-img);
+    border: 2px solid var(--white);
     border-radius: 0.5em;
 
     &.paypal {
