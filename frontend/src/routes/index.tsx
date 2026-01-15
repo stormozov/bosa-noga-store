@@ -10,7 +10,7 @@ const router = createBrowserRouter([
 		element: lazyWithSuspense(() => import("@/layouts/PageLayout/PageLayout")),
 		children: [
 			{
-        index: true,
+				index: true,
 				element: lazyWithSuspense(() => import("@/pages/Homepage/Homepage")),
 			},
 			{
@@ -23,12 +23,14 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/contacts",
-				element: <div>Contacts</div>,
+				element: lazyWithSuspense(
+					() => import("@/pages/ContactsPage/ContactsPage"),
+				),
 			},
-      {
-        path: "/cart",
-        element: <div>Cart</div>,
-      },
+			{
+				path: "/cart",
+				element: <div>Cart</div>,
+			},
 		],
 	},
 ]);
