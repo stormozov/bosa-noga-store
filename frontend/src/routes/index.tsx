@@ -31,6 +31,12 @@ const router = createBrowserRouter([
 				path: "/cart",
 				element: <div>Cart</div>,
 			},
+			{
+				path: "*",
+				element: lazyWithSuspense(
+					() => import("@/pages/PageNotFound/PageNotFound"),
+				),
+			},
 		],
 	},
 ]);
