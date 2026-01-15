@@ -3,7 +3,6 @@
 // =============================================================================
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
@@ -27,7 +26,6 @@ button {
 }
 
 a {
-  font-weight: 500;
   text-decoration: inherit;
   color: var(--color-link-default);
 
@@ -54,11 +52,6 @@ button {
   }
 }
 
-h1 {
-  font-size: 2em;
-  line-height: 1.1;
-}
-
 ul,
 ol {
   list-style: none;
@@ -72,11 +65,6 @@ section {
   &.pt-4rem {
     padding-top: 4rem;
   }
-}
-
-h2,
-.h2 {
-  margin-bottom: 1.5em;
 }
 
 .min-height-300 {
