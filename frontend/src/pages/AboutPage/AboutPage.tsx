@@ -1,4 +1,8 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import bannersConfig from "@/configs/banners.json";
+import { ContentPreloader } from "@/features";
+import { useMarkdown } from "@/shared/hooks";
 import { MainBanner } from "@/shared/ui";
 
 import "./AboutPage.scss";
@@ -7,6 +11,11 @@ import "./AboutPage.scss";
  * Компонент страницы «О магазине».
  */
 export default function AboutPage() {
+	const { mdContent, mdLoading, mdError } = useMarkdown("./md/about.md");
+
+	if (mdLoading) return <ContentPreloader />;
+	if (mdError) return <p>{mdError}</p>;
+
 	return (
 		<>
 			<MainBanner banners={bannersConfig.main} />
@@ -15,53 +24,7 @@ export default function AboutPage() {
 				<h2 className="text-center">О магазине</h2>
 
 				<div className="about-section__content">
-					<p>
-						В Интернете можно встретить немало магазинов, предлагающих
-						аксессуары. Но именно к нам хочется возвращаться снова и снова.
-					</p>
-
-					<h4 className="text-center">Мы предлагаем вам особые условия:</h4>
-
-					<ol>
-						<li>
-							Индивидуальный подход специалиста. Когда поступает новая коллекция
-							обуви весна-лето или же коллекция обуви осень-зима – покупателям
-							бывает трудно сориентироваться во всем многообразии новинок. Наш
-							менеджер по телефону поможет вам определиться с товарами,
-							подходящими именно вам.
-						</li>
-
-						<li>
-							Мы периодически проводим распродажи как женских и мужских, так и
-							детских моделей. Вы будете приятно удивлены ценами на аксессуары в
-							мага- зине BosaNoga.
-						</li>
-
-						<li>
-							У нас всегда есть из чего выбрать. Неважно, какую категорию вы
-							прос- матриваете: осень-зима, или же весна-лето – вы всегда
-							сможете найти ва- рианты, подходящие вам по внешнему виду и цене.
-						</li>
-
-						<li>Мы несем ответственность за все товары.</li>
-
-						<li>
-							Молодые мамы будут рады обширному ассортименту детских моделей.
-						</li>
-					</ol>
-
-					<p>
-						Если вы ищете место, где представлены обувные новинки от самых
-						известных брендов, то вы зашли по верному адресу.
-					</p>
-
-					<p>
-						У нас представлены модели для мужчин, женщин, а также детские
-						сапоги, босоножки, ботинки и туфли. Сделав заказ в нашем
-						интернет-магазине, вы сможете быть модным и стильным как
-						осенью-зимой, так и весной-летом. Просто наберите номер нашего
-						телефона, и мы поможем вам определиться с покупкой.
-					</p>
+					<ReactMarkdown remarkPlugins={[remarkGfm]}>{mdContent}</ReactMarkdown>
 				</div>
 			</section>
 		</>
