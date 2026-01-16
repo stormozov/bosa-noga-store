@@ -1,0 +1,28 @@
+// =============================================================================
+// Стили карточки товара
+// =============================================================================
+
+.product-card {
+  $btnColor: var(--color-link-default);
+
+  &__title {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: break-word;
+  }
+
+  &__btn {
+    background-color: transparent;
+    border-color: $btnColor;
+    color: $btnColor;
+
+    &:hover {
+      background-color: $btnColor;
+      border-color: $btnColor;
+      color: var(--white);
+    }
+  }
+}

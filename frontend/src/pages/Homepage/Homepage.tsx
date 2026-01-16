@@ -1,4 +1,5 @@
 import bannersConfig from "@/configs/banners.json";
+import { HitsSection } from "@/features";
 import { ContentPreloader } from "@/features/Preloader";
 import { MainBanner } from "@/shared/ui";
 
@@ -11,11 +12,7 @@ export default function Homepage() {
 	return (
 		<>
 			<MainBanner banners={bannersConfig.main} />
-
-			<section className="top-sales-section min-height-300 pt-4rem">
-				<h2 className="text-center">Хиты продаж!</h2>
-				<ContentPreloader />
-			</section>
+			<HitsSection />
 
 			<section className="catalog-section min-height-300 pt-4rem">
 				<h2 className="text-center">Каталог</h2>
