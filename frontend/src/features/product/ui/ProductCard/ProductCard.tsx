@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+
 import type { ProductCardType } from "@/features/product/types";
 
 import "./ProductCard.scss";
@@ -36,7 +37,11 @@ export function ProductCard({ product }: IProductCartProps) {
 
 	return (
 		<div className="product-card card h-100">
-			<img src={images[0]} alt={title} className="card-img-top img-fluid" />
+			<img
+				src={images[0]}
+				alt={title}
+				className="product-card__img card-img-top img-fluid"
+			/>
 			<div className="product-card__content card-body">
 				<p className="product-card__title" title={title}>
 					{title}

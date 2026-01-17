@@ -5,6 +5,12 @@
 .product-card {
   $btnColor: var(--color-link-default);
 
+  &__img {
+    height: 385px;
+    object-fit: contain;
+    object-position: center;
+  }
+
   &__title {
     display: -webkit-box;
     line-clamp: 2;
