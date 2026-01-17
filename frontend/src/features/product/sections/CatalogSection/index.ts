@@ -1,3 +1,2 @@
 export * from "./CatalogSection";
-export * from "./HitsSection";
 

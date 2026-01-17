@@ -7,7 +7,7 @@ import "./HitsSection.scss";
 /**
  * API-эндпоинт для получения списка хитов продаж.
  */
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/top-sales`;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/top-sales`;
 
 /**
  * Компонент секции "Хиты продаж", отображающий список популярных товаров.

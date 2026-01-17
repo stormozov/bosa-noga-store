@@ -1,6 +1,5 @@
 import bannersConfig from "@/configs/banners.json";
-import { HitsSection } from "@/features";
-import { ContentPreloader } from "@/features/Preloader";
+import { CatalogSection, HitsSection } from "@/features";
 import { MainBanner } from "@/shared/ui";
 
 import "./Homepage.scss";
@@ -13,11 +12,7 @@ export default function Homepage() {
 		<>
 			<MainBanner banners={bannersConfig.main} />
 			<HitsSection />
-
-			<section className="catalog-section min-height-300 pt-4rem">
-				<h2 className="text-center">Каталог</h2>
-				<ContentPreloader />
-			</section>
+			<CatalogSection />
 		</>
 	);
 }
