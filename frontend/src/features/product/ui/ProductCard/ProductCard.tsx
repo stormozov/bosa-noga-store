@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import type { ProductCardType } from "@/features/product/types";
+import { formatRubles } from "@/shared/utils";
 
 import "./ProductCard.scss";
 
@@ -46,7 +47,7 @@ export function ProductCard({ product }: IProductCartProps) {
 				<p className="product-card__title" title={title}>
 					{title}
 				</p>
-				<p className="product-card__price">{price}</p>
+				<p className="product-card__price">{formatRubles(price)}</p>
 				<Link
 					to={`/catalog/${id}`}
 					className="product-card__btn btn"
