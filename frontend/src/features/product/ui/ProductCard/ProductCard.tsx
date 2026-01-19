@@ -50,7 +50,7 @@ export function ProductCard({ product }: IProductCartProps) {
 				<p className="product-card__price">{formatRubles(price)}</p>
 				<Link
 					to={`/catalog/${id}`}
-					className="product-card__btn btn"
+					className="product-card__btn btn btn-ghost"
 					area-label="Заказать"
 				>
 					Заказать

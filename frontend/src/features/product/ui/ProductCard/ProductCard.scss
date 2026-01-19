@@ -3,8 +3,6 @@
 // =============================================================================
 
 .product-card {
-  $btnColor: var(--color-link-default);
-
   &__img {
     height: 385px;
     object-fit: contain;
@@ -18,17 +16,5 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     overflow-wrap: break-word;
-  }
-
-  &__btn {
-    background-color: transparent;
-    border-color: $btnColor;
-    color: $btnColor;
-
-    &:hover {
-      background-color: $btnColor;
-      border-color: $btnColor;
-      color: var(--white);
-    }
   }
 }

@@ -51,6 +51,29 @@ button {
   }
 }
 
+.btn-ghost {
+  $btnColor: var(--color-link-default);
+
+  background-color: transparent;
+  border-color: $btnColor;
+  color: $btnColor;
+
+  &:hover {
+    background-color: $btnColor;
+    border-color: $btnColor;
+    color: var(--white);
+  }
+
+  &:disabled {
+    background-color: $btnColor;
+    border-color: $btnColor;
+
+    color: var(--white);
+
+    cursor: not-allowed;
+  }
+}
+
 ul {
   list-style: none;
 }
@@ -71,6 +94,10 @@ section {
   &.pb-2rem {
     padding-bottom: 2rem;
   }
+}
+
+.mt-1rem {
+  margin-top: 1rem;
 }
 
 .min-height-300 {
