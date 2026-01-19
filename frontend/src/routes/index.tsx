@@ -19,7 +19,9 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/catalog",
-				element: <div>Catalog</div>,
+				element: lazyWithSuspense(
+					() => import("@/pages/CatalogPage/CatalogPage"),
+				),
 			},
 			{
 				path: "/contacts",
