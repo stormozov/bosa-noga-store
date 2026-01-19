@@ -5,9 +5,9 @@ import { usePaginatedApi } from "@/api/hooks/usePaginatedApi";
 import { ContentPreloader } from "@/features/Preloader";
 import type { ICatalogCategory, ProductCardType } from "@/features/product";
 import {
+	AnimatedProductList,
 	CatalogCategories,
 	CatalogCategoriesSkeleton,
-	ProductList,
 } from "@/features/product";
 import { LoadMoreButton } from "@/shared/ui";
 import { CATEGORIES_API, ITEMS_API } from "./constants";
@@ -48,6 +48,8 @@ interface ICatalogSectionProps {
  */
 export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	const [activeCategoryId, setActiveCategoryId] = useState<number>(0);
+	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
+
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const { isCategoryVisible = true } = visibility || {};
 
@@ -79,11 +81,18 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	 * Функция-обработчик для загрузки товаров по категориям.
 	 */
 	const loadItemsByCategory = useCallback(
-		(categoryId: number) => {
+		async (categoryId: number) => {
+			setIsLoadingCategoryChange(true);
 			resetItems();
+
 			const params: ApiParams = {};
 			params.categoryId = categoryId !== 0 ? categoryId : undefined;
-			refetchItems(params, true, 0);
+
+			try {
+				await refetchItems(params, true, 0);
+			} finally {
+				setTimeout(() => setIsLoadingCategoryChange(false), 300);
+			}
 		},
 		[resetItems, refetchItems],
 	);
@@ -123,6 +132,14 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	// Эффект очистки при размонтировании компонента
 	useEffect(() => () => abortExistingRequest(), [abortExistingRequest]);
 
+	const loadMoreConfig = {
+		isLoading: loadingMore,
+		hasMore: hasMore,
+		disabled:
+			!hasMore || loadingMore || isLoadingCategoryChange || loadingInitial,
+		onClick: handleLoadMore,
+	};
+
 	return (
 		<section className="catalog-section min-height-300 pt-4rem pb-2rem">
 			<h2 className="text-center">Каталог</h2>
@@ -141,36 +158,39 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 			</div>
 
 			<div className="catalog-section__items">
-				{loadingInitial && items.length === 0 && <ContentPreloader />}
+				{(loadingInitial || isLoadingCategoryChange) && <ContentPreloader />}
 
-				{itemsError && (
+				{!loadingInitial && !isLoadingCategoryChange && itemsError && (
 					<div className="catalog-section__error">
 						<p className="text-center color-error">{itemsError.message}</p>
 						<button
 							type="button"
 							className="btn btn-ghost mt-1rem"
 							onClick={() => loadItemsByCategory(activeCategoryId)}
+							disabled={loadingInitial || isLoadingCategoryChange}
 						>
-							Попробовать снова
+							{loadingInitial || isLoadingCategoryChange
+								? "Загрузка..."
+								: "Попробовать снова"}
 						</button>
 					</div>
 				)}
 
-				{items.length > 0 && <ProductList products={items} />}
-
-				{visibility?.isButtonMoreVisible !== false && hasMore && (
-					<div className="catalog-section__load-more mt-1rem text-center">
-						<LoadMoreButton
-							config={{
-								isLoading: loadingMore,
-								hasMore: hasMore,
-								disabled: !hasMore || loadingMore,
-								onClick: handleLoadMore,
-							}}
-							className="catalog-section__load-more"
-						/>
-					</div>
+				{items.length > 0 && !loadingInitial && !isLoadingCategoryChange && (
+					<AnimatedProductList products={items} />
 				)}
+
+				{visibility?.isButtonMoreVisible !== false &&
+					hasMore &&
+					!loadingInitial &&
+					!isLoadingCategoryChange && (
+						<div className="catalog-section__load-more mt-1rem text-center">
+							<LoadMoreButton
+								config={loadMoreConfig}
+								className="catalog-section__load-more"
+							/>
+						</div>
+					)}
 			</div>
 		</section>
 	);
