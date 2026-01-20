@@ -9,7 +9,11 @@ import {
 	CatalogCategories,
 	CatalogCategoriesSkeleton,
 } from "@/features/product";
-import { SearchForm } from "@/features/search";
+import {
+	type ISearchFormProps,
+	SearchForm,
+	useDebouncedSearch,
+} from "@/features/search";
 import { LoadMoreButton } from "@/shared/ui";
 import { CATEGORIES_API, ITEMS_API } from "./constants";
 
@@ -54,7 +58,6 @@ interface ICatalogSectionProps {
  */
 export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	const [activeCategoryId, setActiveCategoryId] = useState(0);
-	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
 
 	const abortControllerRef = useRef<AbortController | null>(null);
@@ -82,6 +85,19 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 			reset: resetItems,
 		},
 	} = usePaginatedApi<ProductCardType>({ baseUrl: ITEMS_API });
+
+	const {
+		searchQuery,
+		handleSearchQueryChange,
+		handleSearchKeyDown,
+		clearSearch,
+		executeSearch,
+	} = useDebouncedSearch({
+		activeCategoryId,
+		resetItems,
+		refetchItems,
+		setIsLoadingCategoryChange,
+	});
 
 	/**
 	 * Функция для отмены существующего запроса.
@@ -126,46 +142,6 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		[loadItemsByCategory],
 	);
 
-	const handleSearch = useCallback(async () => {
-		const trimmedQuery = searchQuery.trim();
-		const hasCategory = activeCategoryId !== 0;
-		const hasQuery = trimmedQuery.length > 0;
-
-		if (!hasCategory && !hasQuery) {
-			resetItems();
-			setIsLoadingCategoryChange(false);
-			return;
-		}
-
-		setIsLoadingCategoryChange(true);
-		resetItems();
-
-		const params: ApiParams = {};
-		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
-		if (searchQuery.trim().length > 0) params.q = searchQuery.trim();
-
-		try {
-			await refetchItems(params, true, 0);
-		} finally {
-			setTimeout(() => setIsLoadingCategoryChange(false), 300);
-		}
-	}, [activeCategoryId, searchQuery, resetItems, refetchItems]);
-
-	const handleClearSearch = useCallback(() => {
-		setSearchQuery("");
-		setIsLoadingCategoryChange(true);
-		resetItems();
-
-		const params: ApiParams = {};
-		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
-
-		try {
-			refetchItems(params, true, 0);
-		} finally {
-			setTimeout(() => setIsLoadingCategoryChange(false), 300);
-		}
-	}, [activeCategoryId, resetItems, refetchItems]);
-
 	/**
 	 * Функция-обработчик для подгрузки следующей порции товаров.
 	 */
@@ -191,6 +167,15 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	// Эффект очистки при размонтировании компонента
 	useEffect(() => () => abortExistingRequest(), [abortExistingRequest]);
 
+	// Защита от показа кнопки "Загрузить еще" когда товаров нет
+	const shouldShowLoadMore =
+		isButtonMoreVisible &&
+		hasMore &&
+		!loadingInitial &&
+		!isLoadingCategoryChange &&
+		items.length > 0;
+
+	// Конфиг для кнопки "Загрузить еще"
 	const loadMoreConfig = {
 		isLoading: loadingMore,
 		hasMore: hasMore,
@@ -199,18 +184,27 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		onClick: handleLoadMore,
 	};
 
+	// Конфиг для формы поиска
+	const searchFormConfig: ISearchFormProps = {
+		value: searchQuery,
+		handlers: {
+			onChange: handleSearchQueryChange,
+			onClear: clearSearch,
+			onSubmit: executeSearch,
+			onKeyDown: handleSearchKeyDown,
+		},
+		config: {
+			autoComplete: "off",
+		},
+	};
+
 	return (
 		<section className="catalog-section min-height-300 pt-4rem pb-2rem">
 			<h2 className="text-center">Каталог</h2>
 
 			{isSearchVisible && (
 				<div className="catalog-section__search mb-2rem">
-					<SearchForm
-						query={searchQuery}
-						onChange={setSearchQuery}
-						onSearch={handleSearch}
-						onClearSearch={handleClearSearch}
-					/>
+					<SearchForm {...searchFormConfig} />
 				</div>
 			)}
 
@@ -250,17 +244,14 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 					<AnimatedProductList products={items} />
 				)}
 
-				{isButtonMoreVisible &&
-					hasMore &&
-					!loadingInitial &&
-					!isLoadingCategoryChange && (
-						<div className="catalog-section__load-more mt-1rem text-center">
-							<LoadMoreButton
-								config={loadMoreConfig}
-								className="catalog-section__load-more"
-							/>
-						</div>
-					)}
+				{shouldShowLoadMore && (
+					<div className="catalog-section__load-more mt-1rem text-center">
+						<LoadMoreButton
+							config={loadMoreConfig}
+							className="catalog-section__load-more"
+						/>
+					</div>
+				)}
 			</div>
 		</section>
 	);

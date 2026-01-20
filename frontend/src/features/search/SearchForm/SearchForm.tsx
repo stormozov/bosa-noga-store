@@ -1,77 +1,69 @@
 import { useCallback } from "react";
 
+import type { ISearchFormProps } from "./types";
+
 import "./SearchForm.scss";
-
-/**
- * Интерфейс, описывающий свойства компонента {@link SearchForm}.
- */
-interface ISearchFormProps {
-	/**
-	 * Текущее значение поискового запроса.
-	 */
-	query: string;
-
-	/**
-	 * Функция-обработчик изменения поискового запроса.
-	 */
-	onChange: (query: string) => void;
-
-	/**
-	 * Функция-обработчик выполнения поиска.
-	 */
-	onSearch: () => void;
-
-	/**
-	 * Функция-обработчик очистки поиска.
-	 */
-	onClearSearch: () => void;
-}
 
 /**
  * Компонент формы поиска товаров.
  */
-export function SearchForm({
-	query,
-	onChange,
-	onSearch,
-	onClearSearch,
-}: ISearchFormProps) {
+export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
+	const { onChange, onClear, onSubmit, onKeyDown } = handlers;
+	const {
+		className = "",
+		id = "search-input",
+		name = "search",
+		placeholder = "Поиск",
+		disabled = false,
+		autoComplete = "off",
+	} = config;
+
 	const handleInputChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
 		[onChange],
 	);
 
-	const handleKeyDown = useCallback(
-		(e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === "Enter") onSearch();
+	const handleSubmit = useCallback(
+		(e: React.FormEvent<HTMLFormElement>) => {
+			e.preventDefault();
+			onSubmit?.();
 		},
-		[onSearch],
+		[onSubmit],
 	);
 
+	const inputProps = {
+		type: "search" as const,
+		name,
+		className: "search-form__input",
+		id,
+		value,
+		placeholder,
+		"aria-label": placeholder,
+		autoComplete,
+		disabled,
+		onChange: handleInputChange,
+		onKeyDown,
+	};
+
 	return (
-		<div className="search-form">
-			<div className="search-form__input-wrapper">
-				<input
-					type="search"
-					name="search"
-					className="search-form__input"
-					value={query}
-					placeholder="Поиск"
-					onChange={handleInputChange}
-					onKeyDown={handleKeyDown}
-				/>
-				{query && (
-					<button
-						type="button"
-						className="search-form__btn-clear"
-						aria-label="Очистить поиск"
-						title="Очистить поиск"
-						onClick={onClearSearch}
-					>
-						&times;
-					</button>
-				)}
-			</div>
+		<div className={`search-form ${className}`.trim()}>
+			<form onSubmit={handleSubmit} className="search-form__form">
+				<div className="search-form__input-wrapper">
+					<input {...inputProps} />
+					{value && (
+						<button
+							type="button"
+							className="search-form__btn-clear"
+							aria-label="Очистить поиск"
+							title="Очистить поиск"
+							onClick={onClear}
+							disabled={disabled}
+						>
+							&times;
+						</button>
+					)}
+				</div>
+			</form>
 		</div>
 	);
 }
