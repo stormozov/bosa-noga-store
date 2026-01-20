@@ -149,7 +149,8 @@ export const usePaginatedApi = <T>(
 		setOffset(0);
 		setHasMore(true);
 		setError(null);
-	}, [abortRequest]);
+		paramsRef.current = initialParams;
+	}, [abortRequest, initialParams]);
 
 	useEffect(() => {
 		isMounted.current = true;

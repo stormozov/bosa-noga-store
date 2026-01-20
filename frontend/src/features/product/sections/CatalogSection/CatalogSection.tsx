@@ -9,6 +9,7 @@ import {
 	CatalogCategories,
 	CatalogCategoriesSkeleton,
 } from "@/features/product";
+import { SearchForm } from "@/features/search";
 import { LoadMoreButton } from "@/shared/ui";
 import { CATEGORIES_API, ITEMS_API } from "./constants";
 
@@ -29,6 +30,11 @@ interface ICatalogSectionVisibilityConfig {
 	 * Флаг, указывающий, должна ли быть видна кнопка "Загрузить ещё".
 	 */
 	isButtonMoreVisible?: boolean;
+
+	/**
+	 * Флаг, указывающий, должна ли быть видна форма поиска товаров.
+	 */
+	isSearchVisible?: boolean;
 }
 
 /**
@@ -47,11 +53,20 @@ interface ICatalogSectionProps {
  * Компонент секции каталога товаров с фильтрацией по категориям.
  */
 export function CatalogSection({ visibility }: ICatalogSectionProps) {
-	const [activeCategoryId, setActiveCategoryId] = useState<number>(0);
+	const [activeCategoryId, setActiveCategoryId] = useState(0);
+	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
 
 	const abortControllerRef = useRef<AbortController | null>(null);
-	const { isCategoryVisible = true } = visibility || {};
+	const loadItemsByCategoryRef = useRef<(categoryId: number) => Promise<void>>(
+		() => Promise.resolve(),
+	);
+
+	const {
+		isCategoryVisible = true,
+		isButtonMoreVisible = true,
+		isSearchVisible = true,
+	} = visibility || {};
 
 	const {
 		state: {
@@ -81,12 +96,13 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	 * Функция-обработчик для загрузки товаров по категориям.
 	 */
 	const loadItemsByCategory = useCallback(
-		async (categoryId: number) => {
+		async (categoryId: number): Promise<void> => {
 			setIsLoadingCategoryChange(true);
 			resetItems();
 
 			const params: ApiParams = {};
 			params.categoryId = categoryId !== 0 ? categoryId : undefined;
+			if (searchQuery.trim().length > 0) params.q = searchQuery.trim();
 
 			try {
 				await refetchItems(params, true, 0);
@@ -94,8 +110,10 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 				setTimeout(() => setIsLoadingCategoryChange(false), 300);
 			}
 		},
-		[resetItems, refetchItems],
+		[resetItems, refetchItems, searchQuery],
 	);
+
+	loadItemsByCategoryRef.current = loadItemsByCategory;
 
 	/**
 	 * Функция-обработчик для выбора категории.
@@ -108,6 +126,46 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		[loadItemsByCategory],
 	);
 
+	const handleSearch = useCallback(async () => {
+		const trimmedQuery = searchQuery.trim();
+		const hasCategory = activeCategoryId !== 0;
+		const hasQuery = trimmedQuery.length > 0;
+
+		if (!hasCategory && !hasQuery) {
+			resetItems();
+			setIsLoadingCategoryChange(false);
+			return;
+		}
+
+		setIsLoadingCategoryChange(true);
+		resetItems();
+
+		const params: ApiParams = {};
+		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
+		if (searchQuery.trim().length > 0) params.q = searchQuery.trim();
+
+		try {
+			await refetchItems(params, true, 0);
+		} finally {
+			setTimeout(() => setIsLoadingCategoryChange(false), 300);
+		}
+	}, [activeCategoryId, searchQuery, resetItems, refetchItems]);
+
+	const handleClearSearch = useCallback(() => {
+		setSearchQuery("");
+		setIsLoadingCategoryChange(true);
+		resetItems();
+
+		const params: ApiParams = {};
+		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
+
+		try {
+			refetchItems(params, true, 0);
+		} finally {
+			setTimeout(() => setIsLoadingCategoryChange(false), 300);
+		}
+	}, [activeCategoryId, resetItems, refetchItems]);
+
 	/**
 	 * Функция-обработчик для подгрузки следующей порции товаров.
 	 */
@@ -116,9 +174,10 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 		const params: ApiParams = {};
 		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
+		if (searchQuery.trim()) params.q = searchQuery.trim();
 
 		loadMoreItems(params);
-	}, [hasMore, loadingMore, loadMoreItems, activeCategoryId]);
+	}, [hasMore, loadingMore, loadMoreItems, activeCategoryId, searchQuery]);
 
 	// Загрузка категорий
 	const { data: categories = [], loading: categoriesLoading } =
@@ -126,8 +185,8 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 	// Загрузка начальных товаров при монтировании компонента
 	useEffect(() => {
-		loadItemsByCategory(activeCategoryId);
-	}, [activeCategoryId, loadItemsByCategory]);
+		loadItemsByCategoryRef.current?.(activeCategoryId);
+	}, [activeCategoryId]);
 
 	// Эффект очистки при размонтировании компонента
 	useEffect(() => () => abortExistingRequest(), [abortExistingRequest]);
@@ -143,6 +202,17 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	return (
 		<section className="catalog-section min-height-300 pt-4rem pb-2rem">
 			<h2 className="text-center">Каталог</h2>
+
+			{isSearchVisible && (
+				<div className="catalog-section__search mb-2rem">
+					<SearchForm
+						query={searchQuery}
+						onChange={setSearchQuery}
+						onSearch={handleSearch}
+						onClearSearch={handleClearSearch}
+					/>
+				</div>
+			)}
 
 			<div className="catalog-section__categories">
 				{isCategoryVisible && categoriesLoading && (
@@ -180,7 +250,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 					<AnimatedProductList products={items} />
 				)}
 
-				{visibility?.isButtonMoreVisible !== false &&
+				{isButtonMoreVisible &&
 					hasMore &&
 					!loadingInitial &&
 					!isLoadingCategoryChange && (

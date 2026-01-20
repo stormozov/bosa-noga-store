@@ -12,7 +12,7 @@ export default function Homepage() {
 		<>
 			<MainBanner banners={bannersConfig.main} />
 			<HitsSection />
-			<CatalogSection />
+			<CatalogSection visibility={{ isSearchVisible: false }} />
 		</>
 	);
 }

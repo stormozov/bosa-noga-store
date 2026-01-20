@@ -1,0 +1,66 @@
+// =============================================================================
+// Стили компонента формы поиска
+// =============================================================================
+
+.search-form {
+	font-size: 1rem;
+
+  &__input-wrapper {
+		position: relative;
+  }
+
+  &__input {
+		$transition: all 0.3s ease;
+
+    padding: 0 2em;
+
+    width: 100%;
+    height: 38px;
+
+		background-color: var(--white);
+    border: 1px solid transparent;
+    border-radius: 50px;
+    box-shadow: var(--shadow-search-field);
+    outline: none;
+
+    color: var(--color-text-primary);
+
+		transition: $transition;
+
+		&::-webkit-search-cancel-button {
+			display: none;
+		}
+
+		&::placeholder {
+			color: var(--color-text-secondary);
+			transition: $transition;
+		}
+
+		&:hover,
+		&:focus-within {
+			border: 1px solid var(--color-border-primary);
+		}
+
+		&:hover::placeholder {
+			opacity: 0.6;
+		}
+
+		&:focus-within::placeholder {
+			color: transparent;
+		}
+  }
+
+  &__btn-clear {
+		position: absolute;
+		right: 1em;
+		top: 50%;
+		transform: translateY(-50%);
+
+		font-size: 1.4em;
+		color: var(--color-text-primary);
+
+		&:hover {
+			color: var(--color-accent);
+		}
+  }
+}
