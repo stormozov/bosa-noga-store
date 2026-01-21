@@ -16,6 +16,7 @@ export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
 		placeholder = "Поиск",
 		disabled = false,
 		autoComplete = "off",
+		clearBtnVisible = true,
 	} = config;
 
 	const handleInputChange = useCallback(
@@ -50,7 +51,7 @@ export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
 			<form onSubmit={handleSubmit} className="search-form__form">
 				<div className="search-form__input-wrapper">
 					<input {...inputProps} />
-					{value && (
+					{value && clearBtnVisible && (
 						<button
 							type="button"
 							className="search-form__btn-clear"

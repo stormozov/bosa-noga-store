@@ -56,6 +56,11 @@ export interface ISearchFormConfig {
 	 * Имя поля для формы
 	 */
 	name?: string;
+
+	/**
+	 * Флаг отображения кнопки очистки
+	 */
+	clearBtnVisible?: boolean;
 }
 
 /**
