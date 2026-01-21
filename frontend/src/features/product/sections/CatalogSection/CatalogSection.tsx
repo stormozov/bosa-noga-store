@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router";
+import { useDebounce } from "use-debounce";
 
 import { type ApiParams, useApiGet } from "@/api";
 import { usePaginatedApi } from "@/api/hooks/usePaginatedApi";
@@ -9,15 +11,26 @@ import {
 	CatalogCategories,
 	CatalogCategoriesSkeleton,
 } from "@/features/product";
-import {
-	type ISearchFormProps,
-	SearchForm,
-	useDebouncedSearch,
-} from "@/features/search";
+import { type ISearchFormProps, SearchForm } from "@/features/search";
 import { LoadMoreButton } from "@/shared/ui";
 import { CATEGORIES_API, ITEMS_API } from "./constants";
 
 import "./CatalogSection.scss";
+
+/**
+ * Интерфейс для рефа с функцией загрузки и контроллером
+ */
+interface ILoadItemsRef {
+	/**
+	 * Контроллер запроса
+	 */
+	abortController: AbortController | null;
+
+	/**
+	 * Функция загрузки
+	 */
+	loadFn: (categoryId: number, query: string) => Promise<void>;
+}
 
 /**
  * Интерфейс, определяющий конфигурацию видимости элементов в секции каталога.
@@ -57,20 +70,34 @@ interface ICatalogSectionProps {
  * Компонент секции каталога товаров с фильтрацией по категориям.
  */
 export function CatalogSection({ visibility }: ICatalogSectionProps) {
+	// Состояния
 	const [activeCategoryId, setActiveCategoryId] = useState(0);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [inputSearchQuery, setInputSearchQuery] = useState("");
+	const [isInitialSyncDone, setIsInitialSyncDone] = useState(false);
 	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
 
-	const abortControllerRef = useRef<AbortController | null>(null);
-	const loadItemsByCategoryRef = useRef<(categoryId: number) => Promise<void>>(
-		() => Promise.resolve(),
-	);
+	// Рефы
+	const isMountedRef = useRef(true);
+	const loadItemsRef = useRef<ILoadItemsRef>({
+		abortController: null,
+		loadFn: async () => Promise.resolve(),
+	});
+	const activeCategoryIdRef = useRef(activeCategoryId);
 
+	// Синхронизация рефа с текущим значением activeCategoryId
+	useEffect(() => {
+		activeCategoryIdRef.current = activeCategoryId;
+	}, [activeCategoryId]);
+
+	// Конфигурация видимости элементов
 	const {
 		isCategoryVisible = true,
 		isButtonMoreVisible = true,
 		isSearchVisible = true,
 	} = visibility || {};
 
+	// Загрузка товаров по API
 	const {
 		state: {
 			data: items,
@@ -86,96 +113,203 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		},
 	} = usePaginatedApi<ProductCardType>({ baseUrl: ITEMS_API });
 
-	const {
-		searchQuery,
-		handleSearchQueryChange,
-		handleSearchKeyDown,
-		clearSearch,
-		executeSearch,
-	} = useDebouncedSearch({
-		activeCategoryId,
-		resetItems,
-		refetchItems,
-		setIsLoadingCategoryChange,
-	});
-
-	/**
-	 * Функция для отмены существующего запроса.
-	 */
-	const abortExistingRequest = useCallback(() => {
-		if (!abortControllerRef.current) return;
-		abortControllerRef.current.abort();
-		abortControllerRef.current = null;
-	}, []);
-
-	/**
-	 * Функция-обработчик для загрузки товаров по категориям.
-	 */
-	const loadItemsByCategory = useCallback(
-		async (categoryId: number): Promise<void> => {
-			setIsLoadingCategoryChange(true);
-			resetItems();
-
-			const params: ApiParams = {};
-			params.categoryId = categoryId !== 0 ? categoryId : undefined;
-			if (searchQuery.trim().length > 0) params.q = searchQuery.trim();
-
-			try {
-				await refetchItems(params, true, 0);
-			} finally {
-				setTimeout(() => setIsLoadingCategoryChange(false), 300);
-			}
-		},
-		[resetItems, refetchItems, searchQuery],
-	);
-
-	loadItemsByCategoryRef.current = loadItemsByCategory;
-
-	/**
-	 * Функция-обработчик для выбора категории.
-	 */
-	const handleCategorySelect = useCallback(
-		(categoryId: number) => {
-			setActiveCategoryId(categoryId);
-			loadItemsByCategory(categoryId);
-		},
-		[loadItemsByCategory],
-	);
-
-	/**
-	 * Функция-обработчик для подгрузки следующей порции товаров.
-	 */
-	const handleLoadMore = useCallback(() => {
-		if (!hasMore || loadingMore) return;
-
-		const params: ApiParams = {};
-		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
-		if (searchQuery.trim()) params.q = searchQuery.trim();
-
-		loadMoreItems(params);
-	}, [hasMore, loadingMore, loadMoreItems, activeCategoryId, searchQuery]);
-
 	// Загрузка категорий
 	const { data: categories = [], loading: categoriesLoading } =
 		useApiGet<ICatalogCategory[]>(CATEGORIES_API);
 
-	// Загрузка начальных товаров при монтировании компонента
+	// URL-параметр поиска
+	const urlSearchQuery = searchParams.get("q")?.trim() || "";
+
+	// Синхронизация инпута поиска с URL при первом рендере
 	useEffect(() => {
-		loadItemsByCategoryRef.current?.(activeCategoryId);
-	}, [activeCategoryId]);
+		if (isInitialSyncDone) return;
+		setInputSearchQuery(urlSearchQuery);
+		setIsInitialSyncDone(true);
+	}, [urlSearchQuery, isInitialSyncDone]);
 
-	// Эффект очистки при размонтировании компонента
-	useEffect(() => () => abortExistingRequest(), [abortExistingRequest]);
+	// Дебаунс для поискового запроса из инпута
+	const [debouncedInputQuery] = useDebounce(inputSearchQuery, 300);
 
-	// Защита от показа кнопки "Загрузить еще" когда товаров нет
+	// Функция для отмены существующего запроса
+	const abortExistingRequest = useCallback(() => {
+		if (!loadItemsRef.current.abortController) return;
+		loadItemsRef.current.abortController.abort();
+		loadItemsRef.current.abortController = null;
+	}, []);
+
+	// Основная функция загрузки товаров
+	const loadItems = useCallback(
+		async (categoryId: number, query: string) => {
+			abortExistingRequest();
+
+			if (!isMountedRef.current) return;
+
+			const controller = new AbortController();
+			loadItemsRef.current.abortController = controller;
+
+			// Устанавливаем флаг загрузки при смене категории
+			if (categoryId !== activeCategoryIdRef.current) {
+				setIsLoadingCategoryChange(true);
+			}
+
+			resetItems();
+
+			try {
+				const params: ApiParams = {};
+				if (categoryId !== 0) params.categoryId = categoryId;
+				if (query) params.q = query;
+
+				await refetchItems(params, true, 0);
+			} catch (error) {
+				if (
+					error instanceof Error &&
+					error.name !== "AbortError" &&
+					isMountedRef.current
+				) {
+					console.error("Failed to load items:", error);
+				}
+			} finally {
+				if (
+					isMountedRef.current &&
+					categoryId !== activeCategoryIdRef.current
+				) {
+					setIsLoadingCategoryChange(false);
+				}
+				if (loadItemsRef.current.abortController === controller) {
+					loadItemsRef.current.abortController = null;
+				}
+			}
+		},
+		[abortExistingRequest, resetItems, refetchItems],
+	);
+
+	// Обновление рефа с актуальной версией функции
+	useEffect(() => {
+		loadItemsRef.current.loadFn = loadItems;
+	}, [loadItems]);
+
+	// Загрузка данных при изменении активной категории или поискового запроса из URL
+	useEffect(() => {
+		if (!isInitialSyncDone && !isMountedRef.current) return;
+		loadItemsRef.current.loadFn(activeCategoryId, urlSearchQuery);
+	}, [activeCategoryId, urlSearchQuery, isInitialSyncDone]);
+
+	// Обработчик очистки поиска
+	const handleClearSearch = useCallback(() => {
+		setInputSearchQuery("");
+		const newParams = new URLSearchParams(searchParams);
+		newParams.delete("q");
+		setSearchParams(newParams, { replace: true });
+	}, [searchParams, setSearchParams]);
+
+	// Обработчик выбора категории
+	const handleCategorySelect = useCallback((categoryId: number) => {
+		setActiveCategoryId(categoryId);
+	}, []);
+
+	// Обработчик подгрузки новой порции товаров
+	const handleLoadMore = useCallback(() => {
+		if (!hasMore || loadingMore || isLoadingCategoryChange) return;
+
+		const params: ApiParams = {};
+		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
+		if (urlSearchQuery) params.q = urlSearchQuery;
+
+		loadMoreItems(params);
+	}, [
+		hasMore,
+		loadingMore,
+		isLoadingCategoryChange,
+		activeCategoryId,
+		urlSearchQuery,
+		loadMoreItems,
+	]);
+
+	// Обработчик формы поиска
+	const handleSearchChange = useCallback((value: string) => {
+		setInputSearchQuery(value);
+	}, []);
+
+	// Обработчик отправки формы
+	const handleSearchSubmit = useCallback(() => {
+		const trimmedQuery = debouncedInputQuery.trim();
+
+		if (trimmedQuery === urlSearchQuery) return;
+
+		const newParams = new URLSearchParams(searchParams);
+		if (trimmedQuery) {
+			newParams.set("q", trimmedQuery);
+		} else {
+			newParams.delete("q");
+		}
+
+		setSearchParams(newParams);
+	}, [debouncedInputQuery, urlSearchQuery, searchParams, setSearchParams]);
+
+	// Обработчик нажатия клавиши во время ввода
+	const handleSearchKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === "Escape") handleClearSearch();
+		},
+		[handleClearSearch],
+	);
+
+	// Обновление URL при изменении дебаунсированного запроса из инпута
+	useEffect(() => {
+		if (
+			isInitialSyncDone &&
+			isMountedRef.current &&
+			debouncedInputQuery.trim() !== urlSearchQuery
+		) {
+			const newParams = new URLSearchParams(searchParams);
+
+			const trimmedQuery = debouncedInputQuery.trim();
+			if (trimmedQuery) {
+				newParams.set("q", trimmedQuery);
+			} else {
+				newParams.delete("q");
+			}
+
+			setSearchParams(newParams, { replace: true });
+		}
+	}, [
+		debouncedInputQuery,
+		urlSearchQuery,
+		searchParams,
+		setSearchParams,
+		isInitialSyncDone,
+	]);
+
+	// Условие для отображения кнопки "Загрузить еще"
 	const shouldShowLoadMore =
 		isButtonMoreVisible &&
 		hasMore &&
+		items.length > 0 &&
+		!loadingInitial &&
+		!isLoadingCategoryChange;
+	
+	// Условие для отображения блока "Ничего не найдено"
+	const shouldShowNotFound =
 		!loadingInitial &&
 		!isLoadingCategoryChange &&
-		items.length > 0;
+		!itemsError &&
+		items.length === 0;
+	
+	// Условие для отображения блока "Загрузка..."
+	const shouldShowLoading = loadingInitial || isLoadingCategoryChange;
 
-	// Конфиг для кнопки "Загрузить еще"
+	// Конфигурация для формы поиска
+	const searchFormConfig: ISearchFormProps = {
+		value: inputSearchQuery,
+		handlers: {
+			onChange: handleSearchChange,
+			onClear: handleClearSearch,
+			onSubmit: handleSearchSubmit,
+			onKeyDown: handleSearchKeyDown,
+		},
+	};
+
+	// Конфигурация для кнопки "Загрузить еще"
 	const loadMoreConfig = {
 		isLoading: loadingMore,
 		hasMore: hasMore,
@@ -184,19 +318,14 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		onClick: handleLoadMore,
 	};
 
-	// Конфиг для формы поиска
-	const searchFormConfig: ISearchFormProps = {
-		value: searchQuery,
-		handlers: {
-			onChange: handleSearchQueryChange,
-			onClear: clearSearch,
-			onSubmit: executeSearch,
-			onKeyDown: handleSearchKeyDown,
-		},
-		config: {
-			autoComplete: "off",
-		},
-	};
+	// Очистка при размонтировании
+	useEffect(() => {
+		isMountedRef.current = true;
+		return () => {
+			isMountedRef.current = false;
+			abortExistingRequest();
+		};
+	}, [abortExistingRequest]);
 
 	return (
 		<section className="catalog-section min-height-300 pt-4rem pb-2rem">
@@ -222,7 +351,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 			</div>
 
 			<div className="catalog-section__items">
-				{(loadingInitial || isLoadingCategoryChange) && <ContentPreloader />}
+				{shouldShowLoading && <ContentPreloader />}
 
 				{!loadingInitial && !isLoadingCategoryChange && itemsError && (
 					<div className="catalog-section__error">
@@ -230,13 +359,28 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 						<button
 							type="button"
 							className="btn btn-ghost mt-1rem"
-							onClick={() => loadItemsByCategory(activeCategoryId)}
-							disabled={loadingInitial || isLoadingCategoryChange}
+							onClick={() =>
+								loadItemsRef.current.loadFn(activeCategoryId, urlSearchQuery)
+							}
+							disabled={shouldShowLoading}
 						>
-							{loadingInitial || isLoadingCategoryChange
-								? "Загрузка..."
-								: "Попробовать снова"}
+							{shouldShowLoading ? "Загрузка..." : "Попробовать снова"}
 						</button>
+					</div>
+				)}
+
+				{shouldShowNotFound && (
+					<div className="catalog-section__empty text-center">
+						<p>Товары не найдены</p>
+						{urlSearchQuery && (
+							<button
+								type="button"
+								className="btn btn-ghost mt-1rem"
+								onClick={handleClearSearch}
+							>
+								Очистить поиск
+							</button>
+						)}
 					</div>
 				)}
 
