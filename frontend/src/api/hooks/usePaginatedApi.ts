@@ -3,8 +3,10 @@ import { get } from "../core";
 import type {
 	ApiParams,
 	IPaginatedApiParams,
-	IPaginatedApiResult
+	IPaginatedApiResult,
 } from "../types";
+
+const DEBUG = import.meta.env.MODE === "development";
 
 /**
  * Кастомный хук для работы с постраничным API.
@@ -15,14 +17,6 @@ import type {
  *
  * @template T - Тип элементов, возвращаемых API (например, `Product`, `User`
  * и т.д.).
- *
- * @remarks
- * - Использует `AbortController` для отмены предыдущего запроса при новом вызове.
- * - Поддерживает динамическое обновление параметров через `refetch`.
- * - Параметр `offset` автоматически увеличивается при подгрузке.
- * - Состояние `hasMore` определяется по количеству возвращённых элементов.
- * - В режиме разработки выводит URL запроса в консоль.
- * - Хук корректно очищает ресурсы при размонтировании.
  */
 export const usePaginatedApi = <T>(
 	config: IPaginatedApiParams,
@@ -89,9 +83,8 @@ export const usePaginatedApi = <T>(
 
 				const queryString = urlParams.toString();
 				const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-				import.meta.env.MODE === "development" &&
-					console.log(`Fetching URL: ${url} with offset: ${requestOffset}`);
+
+				if (DEBUG) console.log(`Main fetch: ${url}`);
 
 				const result = await get<T[]>(url, {
 					...options,
@@ -108,18 +101,57 @@ export const usePaginatedApi = <T>(
 					setOffset(requestOffset);
 				}
 
-				setHasMore(result.length >= itemsPerPage);
+				let nextHasMore = false;
+
+				if (result.length < itemsPerPage) {
+					nextHasMore = false;
+				} else if (result.length === itemsPerPage) {
+					const nextOffset = requestOffset + itemsPerPage;
+
+					const checkParams = new URLSearchParams(urlParams);
+					checkParams.set("offset", nextOffset.toString());
+					const checkUrl = `${baseUrl}?${checkParams.toString()}`;
+
+					if (DEBUG) console.log(`Pagination check: ${checkUrl}`);
+
+					try {
+						const checkResult = await get<T[]>(checkUrl, {
+							...options,
+							signal: controller.signal,
+						});
+
+						nextHasMore = checkResult.length > 0;
+					} catch (checkError) {
+						if (
+							DEBUG &&
+							checkError instanceof Error &&
+							checkError.name !== "AbortError"
+						) {
+							console.warn(
+								"Pagination check failed, assuming no more pages",
+								checkError,
+							);
+						}
+						nextHasMore = false;
+					}
+				} else {
+					nextHasMore = true;
+				}
+
+				setHasMore(nextHasMore);
 				return result;
 			} catch (err) {
-				const isError = err instanceof Error;
-				if (isError && err.name === "AbortError") return;
+				if (err instanceof Error && err.name === "AbortError") return;
 
 				if (isMounted.current) {
-					setError(isError ? err : new Error("Ошибка загрузки данных"));
+					setError(
+						err instanceof Error ? err : new Error("Ошибка загрузки данных"),
+					);
+
 					if (isInitial) setData([]);
 				}
 
-				throw err;
+				return [];
 			} finally {
 				if (isMounted.current) loadingSetter(false);
 			}
@@ -154,20 +186,18 @@ export const usePaginatedApi = <T>(
 
 	useEffect(() => {
 		isMounted.current = true;
+		if (Object.keys(initialParams).length > 0) {
+			paramsRef.current = initialParams;
+			fetchData(initialParams, true, false, 0);
+		} else {
+			setLoadingInitial(false);
+		}
+
 		return () => {
 			isMounted.current = false;
 			abortRequest();
 		};
-	}, [abortRequest]);
-
-	useEffect(() => {
-		if (Object.keys(initialParams).length > 0) {
-			paramsRef.current = initialParams;
-			fetchData(initialParams, true, false, 0);
-		}
-
-		setLoadingInitial(false);
-	}, [initialParams, fetchData]);
+	}, [initialParams, fetchData, abortRequest]);
 
 	return {
 		state: {
