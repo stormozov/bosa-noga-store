@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { useDebounce } from "use-debounce";
 
 import { type ApiParams, useApiGet } from "@/api";
 import { usePaginatedApi } from "@/api/hooks/usePaginatedApi";
@@ -73,8 +72,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	// Состояния
 	const [activeCategoryId, setActiveCategoryId] = useState(0);
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [inputSearchQuery, setInputSearchQuery] = useState("");
-	const [isInitialSyncDone, setIsInitialSyncDone] = useState(false);
+	const [localSearchQuery, setLocalSearchQuery] = useState("");
 	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
 
 	// Рефы
@@ -120,15 +118,8 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	// URL-параметр поиска
 	const urlSearchQuery = searchParams.get("q")?.trim() || "";
 
-	// Синхронизация инпута поиска с URL при первом рендере
-	useEffect(() => {
-		if (isInitialSyncDone) return;
-		setInputSearchQuery(urlSearchQuery);
-		setIsInitialSyncDone(true);
-	}, [urlSearchQuery, isInitialSyncDone]);
-
-	// Дебаунс для поискового запроса из инпута
-	const [debouncedInputQuery] = useDebounce(inputSearchQuery, 300);
+	// Синхронизация локального состояния с URL при mount и изменении URL
+	useEffect(() => setLocalSearchQuery(urlSearchQuery), [urlSearchQuery]);
 
 	// Функция для отмены существующего запроса
 	const abortExistingRequest = useCallback(() => {
@@ -190,13 +181,13 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 	// Загрузка данных при изменении активной категории или поискового запроса из URL
 	useEffect(() => {
-		if (!isInitialSyncDone && !isMountedRef.current) return;
+		if (!isMountedRef.current) return;
 		loadItemsRef.current.loadFn(activeCategoryId, urlSearchQuery);
-	}, [activeCategoryId, urlSearchQuery, isInitialSyncDone]);
+	}, [activeCategoryId, urlSearchQuery]);
 
 	// Обработчик очистки поиска
 	const handleClearSearch = useCallback(() => {
-		setInputSearchQuery("");
+		setLocalSearchQuery("");
 		const newParams = new URLSearchParams(searchParams);
 		newParams.delete("q");
 		setSearchParams(newParams, { replace: true });
@@ -227,13 +218,14 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 	// Обработчик формы поиска
 	const handleSearchChange = useCallback((value: string) => {
-		setInputSearchQuery(value);
+		setLocalSearchQuery(value);
 	}, []);
 
 	// Обработчик отправки формы
 	const handleSearchSubmit = useCallback(() => {
-		const trimmedQuery = debouncedInputQuery.trim();
+		const trimmedQuery = localSearchQuery.trim();
 
+		// Если запрос не изменился, не нужно обновлять URL
 		if (trimmedQuery === urlSearchQuery) return;
 
 		const newParams = new URLSearchParams(searchParams);
@@ -244,41 +236,19 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		}
 
 		setSearchParams(newParams);
-	}, [debouncedInputQuery, urlSearchQuery, searchParams, setSearchParams]);
+	}, [localSearchQuery, urlSearchQuery, searchParams, setSearchParams]);
 
 	// Обработчик нажатия клавиши во время ввода
 	const handleSearchKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === "Escape") handleClearSearch();
-		},
-		[handleClearSearch],
-	);
-
-	// Обновление URL при изменении дебаунсированного запроса из инпута
-	useEffect(() => {
-		if (
-			isInitialSyncDone &&
-			isMountedRef.current &&
-			debouncedInputQuery.trim() !== urlSearchQuery
-		) {
-			const newParams = new URLSearchParams(searchParams);
-
-			const trimmedQuery = debouncedInputQuery.trim();
-			if (trimmedQuery) {
-				newParams.set("q", trimmedQuery);
-			} else {
-				newParams.delete("q");
+			if (e.key === "Escape") {
+				handleClearSearch();
+			} else if (e.key === "Enter") {
+				handleSearchSubmit();
 			}
-
-			setSearchParams(newParams, { replace: true });
-		}
-	}, [
-		debouncedInputQuery,
-		urlSearchQuery,
-		searchParams,
-		setSearchParams,
-		isInitialSyncDone,
-	]);
+		},
+		[handleClearSearch, handleSearchSubmit],
+	);
 
 	// Условие для отображения кнопки "Загрузить еще"
 	const shouldShowLoadMore =
@@ -294,13 +264,13 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		!isLoadingCategoryChange &&
 		!itemsError &&
 		items.length === 0;
-	
+
 	// Условие для отображения блока "Загрузка..."
 	const shouldShowLoading = loadingInitial || isLoadingCategoryChange;
 
 	// Конфигурация для формы поиска
 	const searchFormConfig: ISearchFormProps = {
-		value: inputSearchQuery,
+		value: localSearchQuery,
 		handlers: {
 			onChange: handleSearchChange,
 			onClear: handleClearSearch,
