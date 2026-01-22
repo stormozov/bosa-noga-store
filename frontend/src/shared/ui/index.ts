@@ -4,4 +4,5 @@ export * from "./MainBanner";
 export * from "./Navigation";
 export * from "./PaySystems";
 export * from "./SocialsList";
+export * from "./TwoColumnTable";
 
