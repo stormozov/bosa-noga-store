@@ -38,7 +38,8 @@ interface IProductCountSelectorProps {
  * - кнопок «‑» и «+» для пошагового изменения;
  * - прямого ввода числа в поле.
  *
- * Гарантирует, что количество не опустится ниже минимального значения (1).
+ * Гарантирует, что количество не опустится ниже минимального значения (1)
+ * и не превысит максимального значения (100).
  *
  * @example
  * ```tsx
@@ -54,12 +55,14 @@ export function ProductCountSelector({
 }: IProductCountSelectorProps) {
 	// Константы
 	const MIN_COUNT = 1;
+	const MAX_COUNT = 100;
 	const STEP = 1;
 	const IS_AT_MOST_ONE = currentCount <= 1;
+	const HAS_REACHED_LIMIT = currentCount >= 100;
 
 	// Вычисление ширины поля ввода на основе количества цифр
 	const digitCount = currentCount.toString().length;
-	const widthInCh = Math.max(2, digitCount + 3);
+	const widthInCh = Math.max(2, digitCount + 2.3);
 
 	// Обработчики
 	const handleIncrement = () => handleCountChange(currentCount + STEP);
@@ -69,7 +72,8 @@ export function ProductCountSelector({
 		const value = event.target.value;
 		if (value === "") return;
 		const num = Number(value);
-		if (!Number.isNaN(num) && num >= MIN_COUNT) handleCountChange(num);
+		if (!Number.isNaN(num) && num >= MIN_COUNT && num <= MAX_COUNT)
+			handleCountChange(num);
 	};
 
 	const handleInputBlur = () => {
@@ -78,7 +82,8 @@ export function ProductCountSelector({
 
 	return (
 		<div className="product-count-selector">
-			<div className="btn-group">
+			<p className="product-count-selector__label">Количество: </p>
+			<div className="btn-group btn-group-sm">
 				<button
 					type="button"
 					className="product-count-selector__btn btn btn-secondary"
@@ -105,8 +110,11 @@ export function ProductCountSelector({
 					type="button"
 					className="product-count-selector__btn btn btn-secondary"
 					arial-label="Увеличить количество товара"
-					title="Увеличить количество товара"
+					title={
+						HAS_REACHED_LIMIT ? "Максимум 100" : "Увеличить количество товара"
+					}
 					onClick={handleIncrement}
+					disabled={HAS_REACHED_LIMIT}
 				>
 					+
 				</button>
