@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
@@ -65,10 +65,18 @@ export default function ProductPage() {
 									/>
 
 									{activeSize && (
-										<ProductCountSelector
-											currentCount={productCount}
-											handleCountChange={handleCountChange}
-										/>
+										<>
+											<ProductCountSelector
+												currentCount={productCount}
+												handleCountChange={handleCountChange}
+											/>
+											<Link
+												to="/cart"
+												className="btn btn-danger btn-block btn-lg"
+											>
+												В корзину
+											</Link>
+										</>
 									)}
 								</div>
 							</div>
