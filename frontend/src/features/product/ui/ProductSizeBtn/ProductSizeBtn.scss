@@ -1,0 +1,29 @@
+// =============================================================================
+// Стили компонента кнопки размера товара
+// =============================================================================
+
+.product-size-btn {
+  padding: 0 0.625em;
+  border-radius: 0.9375em;
+
+  &.selected {
+    background-color: var(--color-link-default);
+    color: var(--white);
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &:not(:disabled) {
+    &:hover,
+    &:focus {
+      background-color: var(--color-border-primary);
+      outline: none;
+    }
+  }
+
+  &:not(.selected):disabled {
+    cursor: not-allowed;
+  }
+}
