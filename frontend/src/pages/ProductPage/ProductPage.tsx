@@ -3,7 +3,12 @@ import { useParams } from "react-router";
 
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
-import { ContentPreloader, type IProduct, ProductSizesList } from "@/features";
+import {
+	ContentPreloader,
+	type IProduct,
+	ProductCountSelector,
+	ProductSizesList,
+} from "@/features";
 import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
@@ -12,13 +17,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function ProductPage() {
 	const [activeSize, setActiveSize] = useState<string | null>(null);
+	const [productCount, setProductCount] = useState(1);
+
 	const { id } = useParams();
 
 	const { data, loading } = useApiGet<IProduct>(
 		`${API_BASE_URL}/api/items/${id}`,
 	);
-
-	console.log(activeSize);
 
 	const prepareProductDetails = (product: IProduct) => {
 		return {
@@ -31,10 +36,12 @@ export default function ProductPage() {
 		};
 	};
 
+	const handleCountChange = (newCount: number) => setProductCount(newCount);
+
 	return (
 		<>
 			<MainBanner banners={bannersConfig.main} />
-			<section className="product-page pt-4rem">
+			<section className="product-page pt-4rem pb-2rem">
 				{loading && <ContentPreloader />}
 				{!loading && data && (
 					<>
@@ -48,8 +55,22 @@ export default function ProductPage() {
 								/>
 							</div>
 							<div className="col-7">
-								<TwoColumnTable data={prepareProductDetails(data)} />
-								<ProductSizesList sizes={data?.sizes || []} activeSize={activeSize} onClick={setActiveSize} />
+								<div className="product-page__details">
+									<TwoColumnTable data={prepareProductDetails(data)} />
+
+									<ProductSizesList
+										sizes={data?.sizes || []}
+										activeSize={activeSize}
+										onClick={setActiveSize}
+									/>
+
+									{activeSize && (
+										<ProductCountSelector
+											currentCount={productCount}
+											handleCountChange={handleCountChange}
+										/>
+									)}
+								</div>
 							</div>
 						</div>
 					</>
