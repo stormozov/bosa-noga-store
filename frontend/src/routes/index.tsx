@@ -24,6 +24,12 @@ const router = createBrowserRouter([
 				),
 			},
 			{
+				path: "/catalog/:id",
+				element: lazyWithSuspense(
+					() => import("@/pages/ProductPage/ProductPage"),
+				),
+			},
+			{
 				path: "/contacts",
 				element: lazyWithSuspense(
 					() => import("@/pages/ContactsPage/ContactsPage"),
