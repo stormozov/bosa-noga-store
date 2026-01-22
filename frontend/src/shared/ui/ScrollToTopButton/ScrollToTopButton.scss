@@ -1,0 +1,39 @@
+// =============================================================================
+// Стили компонента кнопки "Наверх"
+// =============================================================================
+
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 1.5em;
+  right: 1.5em;
+  z-index: 1000;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2.5em;
+  height: 2.5em;
+
+  background-color: var(--color-link-default);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  font-size: 1rem;
+  color: var(--white);
+
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-link-hover);
+    outline: 2px solid var(--white);
+  }
+
+  @media (max-width: 768px) {
+    bottom: 0.5em;
+    right: 0.5em;
+  }
+}
