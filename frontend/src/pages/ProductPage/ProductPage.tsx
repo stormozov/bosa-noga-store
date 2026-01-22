@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
 import { ContentPreloader, type IProduct } from "@/features";
-import { MainBanner } from "@/shared/ui";
+import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
 
@@ -16,7 +16,16 @@ export default function ProductPage() {
 		`${API_BASE_URL}/api/items/${id}`,
 	);
 
-	const { title, images } = data || {};
+	const prepareProductDetails = (product: IProduct) => {
+		return {
+			Артикул: product.sku,
+			Производитель: product.manufacturer,
+			Цвет: product.color,
+			Материалы: product.material,
+			Сезон: product.season,
+			Повод: product.reason,
+		};
+	};
 
 	return (
 		<>
@@ -25,12 +34,18 @@ export default function ProductPage() {
 				{loading && <ContentPreloader />}
 				{!loading && data && (
 					<>
-						<h2 className="text-center">{title}</h2>
+						<h2 className="text-center">{data.title}</h2>
 						<div className="row">
 							<div className="col-5">
-								<img src={images?.[0]} alt={title} className="img-fluid" />
+								<img
+									src={data.images[0]}
+									alt={data.title}
+									className="img-fluid"
+								/>
 							</div>
-							<div className="col-7"></div>
+							<div className="col-7">
+								<TwoColumnTable data={prepareProductDetails(data)} />
+							</div>
 						</div>
 					</>
 				)}
