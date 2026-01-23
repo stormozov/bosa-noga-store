@@ -1,17 +1,27 @@
 import { Link } from "react-router";
 
 import bannersConfig from "@/configs/banners.json";
-import { useCart } from "@/features/cart";
+import { CartTable, useCart } from "@/features/cart";
 import { MainBanner } from "@/shared/ui";
 
 import "./CartPage.scss";
+
+const TABLE_HEADERS = [
+	"#",
+	"Название",
+	"Размер",
+	"Кол-во",
+	"Стоимость",
+	"Итого",
+	"Действия",
+];
 
 /**
  * Компонент страницы корзины.
  */
 export default function CartPage() {
 	const {
-		states: { isEmpty },
+		states: { items, isEmpty },
 	} = useCart();
 
 	return (
@@ -29,6 +39,8 @@ export default function CartPage() {
 						Вернуться в каталог
 					</Link>
 				)}
+
+				{!isEmpty && <CartTable headers={TABLE_HEADERS} items={items} />}
 			</section>
 		</>
 	);
