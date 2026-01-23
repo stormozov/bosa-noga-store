@@ -1,24 +1,32 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
+import { useCart } from "@/features/cart";
+import { ContentPreloader } from "@/features/Preloader";
 import {
-	ContentPreloader,
 	type IProduct,
 	ProductCountSelector,
 	ProductSizesList,
-} from "@/features";
+} from "@/features/product";
 import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+/**
+ * Компонент страницы товара.
+ */
 export default function ProductPage() {
 	const [activeSize, setActiveSize] = useState<string | null>(null);
 	const [productCount, setProductCount] = useState(1);
 
+	const navigate = useNavigate();
+	const {
+		actions: { addToCart },
+	} = useCart();
 	const { id } = useParams();
 
 	const { data, loading } = useApiGet<IProduct>(
@@ -37,6 +45,20 @@ export default function ProductPage() {
 	};
 
 	const handleCountChange = (newCount: number) => setProductCount(newCount);
+
+	const handleAddToCart = () => {
+		if (!activeSize) return;
+
+		addToCart({
+			id: Number(id),
+			title: data?.title || "",
+			size: activeSize,
+			price: data?.price || 0,
+			count: productCount,
+		});
+
+		navigate("/cart");
+	};
 
 	return (
 		<>
@@ -70,12 +92,13 @@ export default function ProductPage() {
 												currentCount={productCount}
 												handleCountChange={handleCountChange}
 											/>
-											<Link
-												to="/cart"
+											<button
+												type="button"
 												className="btn btn-danger btn-block btn-lg"
+												onClick={handleAddToCart}
 											>
 												В корзину
-											</Link>
+											</button>
 										</>
 									)}
 								</div>
