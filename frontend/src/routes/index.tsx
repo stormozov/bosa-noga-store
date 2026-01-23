@@ -37,7 +37,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/cart",
-				element: <div>Cart</div>,
+				element: lazyWithSuspense(() => import("@/pages/CartPage/CartPage")),
 			},
 			{
 				path: "*",
