@@ -7,6 +7,11 @@
 
   position: relative;
   font-size: var(--widget-base);
+
+  &__icon, &__link {
+    width: 2em;
+    height: 2em;
+  }
   
   &__link {
     position: relative;
@@ -19,24 +24,28 @@
   }
 
   &__count {
-    --size: calc(var(--widget-base) * 1.3125); // 21px
+    --elementSize: calc(var(--widget-base) * 1.3125);
 
     position: absolute;
-    right: 0;
+    right: -10px;
     top: -5px;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    height: var(--size);
-    width: var(--size);
+    height: var(--elementSize);
+    width: var(--elementSize);
 
     border-radius: 50%;
     background: var(--color-bg-cart-count);
     box-shadow: var(--shadow-cart-count);
 
-    font-size: calc(var(--widget-base) * 0.688); // ~11px
+    font-size: calc(var(--widget-base) * 0.688);
+    line-height: 1;
     color: var(--white);
+
+    cursor: default;
+    pointer-events: none;
   }
 }
