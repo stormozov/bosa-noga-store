@@ -139,3 +139,25 @@ export interface IUseCartActions {
 	/** Проверка наличия товара в корзине */
 	isItemInCart: (id: number, size: string) => boolean;
 }
+
+/**
+ * Интерфейс, описывающий данные пользователя из формы заказа
+ */
+export interface ICartFormData {
+	/** Номер телефона */
+	phone: string;
+
+	/** Адрес доставки */
+	address: string;
+}
+
+/**
+ * Интерфейс, описывающий данные заказа
+ */
+export interface ICartOrderPostData {
+	/** Данные пользователя, полученные из формы заказа */
+	owner: ICartFormData;
+
+	/** Список товаров */
+	items: ICartItem[];
+}
