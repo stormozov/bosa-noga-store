@@ -1,11 +1,16 @@
+import classNames from "classnames";
 import { NavLink } from "react-router";
+
 import "./NavList.scss";
 
 /**
  * Интерфейс, описывающий свойства компонента {@link NavHeader}.
  */
 interface INavListProps {
+	/** Ссылки навигации, которые нужно отобразить */
 	links: Record<string, string>;
+
+	/** Дополнительные классы */
 	classes?: string;
 }
 
@@ -17,7 +22,15 @@ export function NavList({ links, classes }: INavListProps) {
 		<ul className={classes}>
 			{Object.keys(links).map((link) => (
 				<li key={link} className="nav-item">
-					<NavLink to={link} className="nav-link">
+					<NavLink
+						to={link}
+						className={({ isActive }) =>
+							classNames("nav-link", {
+								active: isActive,
+								disabled: isActive,
+							})
+						}
+					>
 						{links[link]}
 					</NavLink>
 				</li>
