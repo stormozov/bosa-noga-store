@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import type { ISearchFormProps } from "./types";
 
@@ -18,6 +18,8 @@ export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
 		autoComplete = "off",
 		clearBtnVisible = true,
 	} = config;
+
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleInputChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
@@ -42,9 +44,14 @@ export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
 		"aria-label": placeholder,
 		autoComplete,
 		disabled,
+		ref: inputRef,
 		onChange: handleInputChange,
 		onKeyDown,
 	};
+
+	useEffect(() => {
+		if (inputRef.current) inputRef.current.focus();
+	}, []);
 
 	return (
 		<div className={`search-form ${className}`.trim()}>
