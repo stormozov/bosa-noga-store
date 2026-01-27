@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 import { type ISearchFormProps, SearchForm } from "@/features/search";
+import { useNavigateWithScrollReset } from "@/shared/hooks";
 
 import "./SearchWidget.scss";
 
@@ -25,7 +25,7 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const navigate = useNavigate();
+	const navigate = useNavigateWithScrollReset();
 
 	// Функция выполнения поиска
 	const performSearch = (query: string) => {
@@ -90,7 +90,7 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		"aria-expanded": isExpanded,
 		"aria-controls": "search-form",
 		title: isExpanded ? "Поиск" : "Открыть поиск",
-	}
+	};
 
 	return (
 		<div
@@ -103,7 +103,7 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 					<SearchForm {...searchFormConfig} />
 				</div>
 			)}
-			<button type="button" {...searchBtnAttrs}/>
+			<button type="button" {...searchBtnAttrs} />
 		</div>
 	);
 }

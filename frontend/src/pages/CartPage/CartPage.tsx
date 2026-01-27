@@ -1,8 +1,9 @@
 import { useCallback, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 import bannersConfig from "@/configs/banners.json";
 import { CartOrderForm, CartTable, useCart } from "@/features/cart";
+import { useNavigateWithScrollReset } from "@/shared/hooks";
 import { MainBanner, Modal } from "@/shared/ui";
 
 import "./CartPage.scss";
@@ -23,7 +24,7 @@ const TABLE_HEADERS = [
 export default function CartPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const navigate = useNavigate();
+	const navigate = useNavigateWithScrollReset();
 
 	const {
 		states: { items, isEmpty },

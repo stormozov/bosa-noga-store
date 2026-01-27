@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
@@ -10,6 +10,7 @@ import {
 	ProductCountSelector,
 	ProductSizesList,
 } from "@/features/product";
+import { useNavigateWithScrollReset } from "@/shared/hooks";
 import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
@@ -23,7 +24,7 @@ export default function ProductPage() {
 	const [activeSize, setActiveSize] = useState<string | null>(null);
 	const [productCount, setProductCount] = useState(1);
 
-	const navigate = useNavigate();
+	const navigate = useNavigateWithScrollReset();
 	const {
 		actions: { addToCart },
 	} = useCart();
