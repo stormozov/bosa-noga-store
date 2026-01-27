@@ -65,16 +65,31 @@ const request = async <T>(
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
+			let errorText = `HTTP error! status: ${response.status}`;
+
+			try {
+				const errorData = await response.text();
+				if (errorData && errorData !== "null") {
+					errorText = errorData;
+				}
+			} catch {
+				// Игнорируем ошибки при чтении тела ошибки
+			}
+
+			throw new Error(errorText);
 		}
+
+		if (response.status === 204) return undefined as T;
 
 		const data: T = await response.json();
 		return data;
 	} catch (error) {
 		clearTimeout(timeoutId);
+
 		if (error instanceof DOMException && error.name === "AbortError") {
 			throw new Error("Request timeout");
 		}
+
 		throw error;
 	}
 };
@@ -144,4 +159,4 @@ export const post = async <T>(
 	options?: IApiOptions,
 ): Promise<T> => {
 	return request<T>(url, "POST", body, options);
-}
+};

@@ -1,70 +1,87 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
+
+import type { ICartOrderPostData } from "@/features/cart";
+
 import { post } from "../core";
-import type { IApiOptions, IUsePostReturns } from "../types";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 /**
- * Хук для выполнения HTTP POST-запросов с управлением состоянием.
+ * Параметры запроса по умолчанию
+ */
+const POST_OPTIONS = { timeout: 30_000 };
+
+/**
+ * Интерфейс возвращаемого значения кастомного хука {@link useApiPost}.
+ */
+interface IUseApiPostResult {
+	/** Флаг загрузки */
+	isLoading: boolean;
+	/** Возможная ошибка */
+	error: string | null;
+	/** Флаг успеха */
+	success: boolean;
+	/** Функция отправки заказа */
+	submitOrder: (data: ICartOrderPostData) => Promise<void>;
+	/** Функция сброса состояния */
+	reset: () => void;
+}
+
+/**
+ * Кастомный хук для отправки заказа на сервер
  *
- * @template T - Тип данных, ожидаемых в ответе от сервера.
- *
- * @returns Объект с состоянием запроса и функцией `execute` для его выполнения.
- * Объект описан в {@link IUsePostReturns}.
+ * @returns Объект с функцией отправки заказа и состоянием
  *
  * @example
- * const { data, loading, error, execute } = useApiPost<UserResponse>();
+ * const { submitOrder, isLoading, error, success, reset } = useOrderSubmit();
  *
- * const handleSend = async () => {
- *   try {
- *     await execute('/api/users', { name: 'Иван' });
- *   } catch (err) {
- *     console.error('Ошибка при создании пользователя:', err);
- *   }
+ * const handleSubmit = async () => {
+ *   await submitOrder({
+ *     owner: { phone: '+79991234567', address: 'ул. Пушкина, д. 10' },
+ *     items: [
+ *       { id: 1, price: 1000, count: 2 },
+ *       { id: 2, price: 500, count: 1 }
+ *     ]
+ *   });
  * };
  */
-export const useApiPost = <T>(): IUsePostReturns<T> => {
-	const [data, setData] = useState<T | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<Error | null>(null);
-	const isMounted = useRef(true);
+export const useApiPost = (): IUseApiPostResult => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState(false);
 
-	useEffect(() => {
-		return () => {
-			isMounted.current = false;
-		};
-	}, []);
-
-	const execute = useCallback(
-		async (url: string, body: unknown, options?: IApiOptions): Promise<T> => {
-			if (!isMounted.current) {
-				throw new Error("Компонент отключен во время запроса");
-			}
-
-			setLoading(true);
+	const submitOrder = useCallback(
+		async (data: ICartOrderPostData): Promise<void> => {
+			setIsLoading(true);
 			setError(null);
+			setSuccess(false);
 
 			try {
-				const result = await post<T>(url, body, options);
-
-				if (isMounted.current) {
-					setData(result);
-					setError(null);
-					return result;
-				}
-
-				return result;
+				await post<void>(`${API_URL}/api/order`, data, POST_OPTIONS);
+				setSuccess(true);
 			} catch (err) {
-				const errorObj =
-					err instanceof Error ? err : new Error("Запрос не удался.");
-
-				if (isMounted.current) setError(errorObj);
-
-				throw errorObj;
+				setError(err instanceof Error ? err.message : "Неизвестная ошибка");
 			} finally {
-				if (isMounted.current) setLoading(false);
+				setTimeout(() => setIsLoading(false), 1000);
 			}
 		},
 		[],
 	);
 
-	return { data, loading, error, execute };
+	const reset = useCallback(() => {
+		setIsLoading(false);
+		setError(null);
+		setSuccess(false);
+	}, []);
+
+	return {
+		// Состояния
+		isLoading,
+		error,
+		success,
+
+		// Функции
+		submitOrder,
+		reset,
+	};
 };

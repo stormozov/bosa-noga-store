@@ -1,0 +1,47 @@
+// =============================================================================
+// Стили компонента формы оформления заказа
+// =============================================================================
+
+.cart-order-form-container {
+  margin: 0 auto;
+  max-width: 30rem;
+}
+
+.cart-order-form {
+  &__input {
+    padding-right: 1.75rem;
+
+    &.is-invalid {
+      background-image: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+
+  &__clear {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 11;
+
+    width: 2em;
+    height: 100%;
+
+    border-radius: 0.25rem;
+  }
+
+  &__phone-error {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-accent);
+  }
+
+  &__agreement-label {
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

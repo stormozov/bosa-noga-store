@@ -1,8 +1,9 @@
-import { Link } from "react-router";
+import { useCallback, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
 import bannersConfig from "@/configs/banners.json";
-import { CartTable, useCart } from "@/features/cart";
-import { MainBanner } from "@/shared/ui";
+import { CartOrderForm, CartTable, useCart } from "@/features/cart";
+import { MainBanner, Modal } from "@/shared/ui";
 
 import "./CartPage.scss";
 
@@ -20,21 +21,32 @@ const TABLE_HEADERS = [
  * Компонент страницы корзины.
  */
 export default function CartPage() {
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const navigate = useNavigate();
+
 	const {
 		states: { items, isEmpty },
 	} = useCart();
+
+	const handleSubmit = useCallback(() => setIsModalOpen(true), []);
+
+	const handleModalClose = useCallback(() => {
+		setIsModalOpen(false);
+		navigate("/");
+	}, [navigate]);
 
 	return (
 		<>
 			<MainBanner banners={bannersConfig.main} />
 
-			<section className="cart-section pt-4rem pb-2rem">
+			<section className="cart-section pt-4rem">
 				<h2 className="text-center">{isEmpty ? "Корзина пуста" : "Корзина"}</h2>
 
 				{isEmpty && (
 					<Link
 						to="/catalog"
-						className="btn btn-ghost d-flex justify-content-center"
+						className="btn btn-ghost mb-5 d-flex justify-content-center"
 					>
 						Вернуться в каталог
 					</Link>
@@ -42,6 +54,19 @@ export default function CartPage() {
 
 				{!isEmpty && <CartTable headers={TABLE_HEADERS} items={items} />}
 			</section>
+
+			{!isEmpty && (
+				<section className="cart-order-section pt-4rem pb-2rem">
+					<h2 className="text-center">Оформить заказ</h2>
+					<CartOrderForm handleSubmit={handleSubmit} />
+				</section>
+			)}
+
+			{isModalOpen && (
+				<Modal isOpen={isModalOpen} onClose={handleModalClose}>
+					<p>Заказ оформлен. Спасибо за покупку!</p>
+				</Modal>
+			)}
 		</>
 	);
 }
