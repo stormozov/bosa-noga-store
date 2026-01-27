@@ -3,7 +3,13 @@
 // =============================================================================
 
 .footer {
-  padding: 1rem 1.563rem;
+  padding: 2rem 1.563rem;
+}
+
+.footer-pay {
+  &__title {
+    margin-bottom: 0.75rem;
+  }
 }
 
 .footer-copyright {

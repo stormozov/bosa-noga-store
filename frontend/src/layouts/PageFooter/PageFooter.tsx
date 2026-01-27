@@ -43,12 +43,12 @@ export default function PageFooter() {
 				<div className="col">
 					{paySystemsConfig.length > 0 && (
 						<section className="footer-pay pt-1rem">
-							<h5>Принимаем к оплате:</h5>
+							<h5 className="footer-pay__title">Принимаем к оплате:</h5>
 							<PaySystems systems={parsePaySystems(paySystemsConfig)} />
 						</section>
 					)}
 
-					<section className="footer-copyright pt-1rem">
+					<section className="footer-copyright pt-2rem">
 						<div className="footer-copyright">
 							<p>
 								2009-2019 &#169; BosaNoga.ru — модный интернет-магазин обуви и

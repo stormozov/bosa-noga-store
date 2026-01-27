@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import bannersConfig from "@/configs/banners.json";
 import { MainBanner } from "@/shared/ui";
 
@@ -14,6 +16,7 @@ export default function PageNotFound() {
 			<section className="page-not-found-section min-height-300 pt-4rem pb-2rem text-center">
 				<h1>Страница не найдена</h1>
 				<p>Извините, такая страница не найдена!</p>
+				<Link to="/" className="btn btn-ghost">Вернуться на главную</Link>
 			</section>
 		</>
 	);

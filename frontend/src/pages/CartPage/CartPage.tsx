@@ -18,6 +18,8 @@ const TABLE_HEADERS = [
 	"Действия",
 ];
 
+const getRandomOrderNumber = () => Math.floor(Math.random() * 1000);
+
 /**
  * Компонент страницы корзины.
  */
@@ -65,7 +67,7 @@ export default function CartPage() {
 
 			{isModalOpen && (
 				<Modal isOpen={isModalOpen} onClose={handleModalClose}>
-					<p>Заказ оформлен. Спасибо за покупку!</p>
+					<p>Заказ (#{getRandomOrderNumber()}) оформлен. Спасибо за покупку!</p>
 				</Modal>
 			)}
 		</>

@@ -4,7 +4,10 @@ import "./MainBanner.scss";
  * Тип, описывающий данные об одном баннере
  */
 type MainBannerType = {
+	/** Текст баннера */
 	text: string;
+
+	/** Ссылка на изображение баннера */
 	src: string;
 };
 
@@ -12,6 +15,7 @@ type MainBannerType = {
  * Интерфейс, описывающий свойства компонента {@link MainBanner}.
  */
 interface IMainBannerProps {
+	/** Список баннеров */
 	banners: MainBannerType[];
 }
 

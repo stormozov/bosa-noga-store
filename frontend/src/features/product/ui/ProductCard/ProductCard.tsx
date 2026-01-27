@@ -9,11 +9,7 @@ import "./ProductCard.scss";
  * Интерфейс, описывающий свойства компонента {@link ProductCard}.
  */
 interface IProductCartProps {
-	/**
-	 * Данные о товаре, которые необходимо отобразить в карточке.
-	 *
-	 * @see {@link ProductCardType}
-	 */
+	/** Данные о товаре, которые необходимо отобразить в карточке. */
 	product: ProductCardType;
 }
 
@@ -42,6 +38,8 @@ export function ProductCard({ product }: IProductCartProps) {
 				src={images[0]}
 				alt={title}
 				className="product-card__img card-img-top img-fluid"
+				loading="lazy"
+				title={title}
 			/>
 			<div className="product-card__content card-body">
 				<p className="product-card__title" title={title}>

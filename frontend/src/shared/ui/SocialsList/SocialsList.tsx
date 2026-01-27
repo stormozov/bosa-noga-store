@@ -1,4 +1,5 @@
 import classNames from "classnames";
+
 import { isValidUrl } from "@/shared/utils";
 
 import "./SocialsList.scss";
@@ -7,8 +8,13 @@ import "./SocialsList.scss";
  * Интерфейс, описывающий свойства одной социальной сети.
  */
 interface ISocialItem {
+	/** Название социальной сети */
 	displayName: string;
+
+	/** Ссылка на социальную сеть */
 	link: string;
+
+	/** Видимость социальной сети */
 	visible: boolean;
 }
 
@@ -16,6 +22,7 @@ interface ISocialItem {
  * Интерфейс, описывающий свойства компонента {@link SocialsList}.
  */
 interface ISocialsListProps {
+	/** Список социальных сетей */
 	socials: ISocialItem[];
 }
 

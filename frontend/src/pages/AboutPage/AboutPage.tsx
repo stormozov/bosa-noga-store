@@ -1,5 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
 import bannersConfig from "@/configs/banners.json";
 import { ContentPreloader } from "@/features";
 import { useMarkdown } from "@/shared/hooks";

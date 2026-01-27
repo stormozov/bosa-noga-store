@@ -7,13 +7,14 @@ const SCROLL_THRESHOLD = 300;
 const BUTTON_LABEL = "Прокрутить страницу наверх";
 
 const ANIMATION_VARIANTS = {
-	initial: { opacity: 0, scale: 0.7 },
+	initial: { opacity: 0, scale: 0 },
 	animate: { opacity: 1, scale: 1 },
-	exit: { opacity: 0, scale: 0.7 },
+	exit: { opacity: 0, scale: 0 },
 };
+
 const ANIMATION_TRANSITION: Transition = {
 	duration: 0.25,
-	ease: "easeOut",
+	ease: "linear",
 };
 
 /**
@@ -23,16 +24,10 @@ interface IScrollToTopButtonProps {
 	/**
 	 * Пороговое значение прокрутки (в пикселях), при превышении которого
 	 * кнопка становится видимой.
-	 *
-	 * @see {@link SCROLL_THRESHOLD}
 	 */
 	threshold?: number;
 
-	/**
-	 * Текст для атрибута aria-label кнопки (доступность).
-	 *
-	 * @see {@link BUTTON_LABEL}
-	 */
+	/** Текст для атрибута aria-label кнопки (доступность). */
 	buttonLabel?: string;
 }
 
