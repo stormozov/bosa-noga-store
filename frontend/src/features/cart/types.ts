@@ -143,7 +143,7 @@ export interface IUseCartActions {
 /**
  * Интерфейс, описывающий данные пользователя из формы заказа
  */
-export interface ICartFormData {
+export interface IOrderFormData {
 	/** Номер телефона */
 	phone: string;
 
@@ -156,7 +156,7 @@ export interface ICartFormData {
  */
 export interface ICartOrderPostData {
 	/** Данные пользователя, полученные из формы заказа */
-	owner: ICartFormData;
+	owner: IOrderFormData;
 
 	/** Список товаров */
 	items: ICartItem[];

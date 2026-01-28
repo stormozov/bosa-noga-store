@@ -3,7 +3,7 @@ import { useEffect, useEffectEvent, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import { useApiPost } from "@/api";
-import { type ICartFormData, useCart } from "@/features/cart";
+import { type IOrderFormData, useCart } from "@/features/cart";
 import { ButtonLoading } from "@/features/Preloader";
 import {
 	formatRussianPhoneNumber,
@@ -18,7 +18,7 @@ const USER_ORDER_DATA_STORAGE_KEY = "userOrderData";
  * Начальное состояние данных формы корзины.
  *
  * Используется для инициализации формы оформления заказа. Все поля
- * соответствуют интерфейсу {@link ICartFormData} и содержат пустые строки
+ * соответствуют интерфейсу {@link IOrderFormData} и содержат пустые строки
  * в качестве значений по умолчанию.
  *
  * @example
@@ -27,9 +27,9 @@ const USER_ORDER_DATA_STORAGE_KEY = "userOrderData";
  * // formData: { phone: "", address: "" }
  * ```
  *
- * @see {@link ICartFormData} - интерфейс структуры данных формы
+ * @see {@link IOrderFormData} - интерфейс структуры данных формы
  */
-const INITIAL_FORM_DATA: ICartFormData = {
+const INITIAL_FORM_DATA: IOrderFormData = {
 	phone: "",
 	address: "",
 };
@@ -37,7 +37,7 @@ const INITIAL_FORM_DATA: ICartFormData = {
 /**
  * Возвращает начальное состояние данных формы корзины из localStorage.
  */
-const getStoredFormData = (): ICartFormData => {
+const getStoredFormData = (): IOrderFormData => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
 	return savedData ? JSON.parse(savedData) : INITIAL_FORM_DATA;
 };
@@ -48,6 +48,21 @@ const getStoredFormData = (): ICartFormData => {
 const hasStoredFormData = (): boolean => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
 	return !!savedData;
+};
+
+/**
+ * Проверяет, заполнены ли все обязательные поля формы заказа.
+ *
+ * Учитывает только пробельные символы (trim), не валидирует формат.
+ *
+ * @param formData - Данные формы заказа
+ * @returns true, если phone и address содержат непустые значения
+ */
+const isOrderFormDataComplete = ({
+	phone,
+	address,
+}: IOrderFormData): boolean => {
+	return phone.trim() !== "" && address.trim() !== "";
 };
 
 /**
@@ -82,11 +97,8 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 			: "";
 	}, [debouncedPhone]);
 
-	const isFormValid =
-		agreement &&
-		formData.phone.trim() !== "" &&
-		formData.address.trim() !== "" &&
-		!phoneError;
+	const isFormSubmittable =
+		agreement && isOrderFormDataComplete(formData) && !phoneError;
 
 	const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -106,9 +118,14 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 	const onClearPhoneOnly = () => setFormData({ ...formData, phone: "" });
 	const onClearAddressOnly = () => setFormData({ ...formData, address: "" });
 
-	const onClearForm = useEffectEvent(() => {
+	const clearForm = () => {
 		setFormData(INITIAL_FORM_DATA);
 		setAgreement(false);
+		setShouldPersistFormData(false);
+	};
+
+	const resetAfterOrderPlacement = useEffectEvent(() => {
+		clearForm();
 		reset();
 		clearCartItems();
 	});
@@ -121,7 +138,7 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 
 	useEffect(() => {
 		if (success && !isLoading) {
-			onClearForm();
+			resetAfterOrderPlacement();
 			handleSubmit?.();
 		}
 	}, [success, isLoading, handleSubmit]);
@@ -149,6 +166,7 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 									? formData.phone
 									: formatRussianPhoneNumber(formData.phone)
 							}
+							disabled={isLoading}
 							onChange={onInputChange}
 							required
 						/>
@@ -181,6 +199,7 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 							placeholder="Адрес доставки"
 							autoComplete="address-line1"
 							value={formData.address}
+							disabled={isLoading}
 							onChange={onInputChange}
 							required
 						/>
@@ -204,6 +223,7 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 						className="form-check-input"
 						id="agreement"
 						checked={agreement}
+						disabled={isLoading}
 						onChange={(e) => setAgreement(e.target.checked)}
 						required
 					/>
@@ -215,7 +235,7 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 					</label>
 				</div>
 
-				{formData.address && formData.phone && (
+				{isFormSubmittable && (
 					<div className="form-group form-check">
 						<input
 							type="checkbox"
@@ -223,11 +243,13 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 							className="form-check-input"
 							id="agreement-save-data"
 							checked={shouldPersistFormData}
+							disabled={isLoading}
 							onChange={(e) => setShouldPersistFormData(e.target.checked)}
 						/>
 						<label
 							htmlFor="agreement-save-data"
 							className="cart-order-form__agreement-label form-check-label"
+							title="Данные сохранятся в локальное хранилище вашего браузера"
 						>
 							Сохранить данные
 						</label>
@@ -238,17 +260,28 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 					<button
 						type="submit"
 						className="btn btn-outline-secondary"
-						title={!isFormValid ? "Заполните все поля" : ""}
-						disabled={!isFormValid || isLoading}
+						title={!isFormSubmittable ? "Заполните все поля" : ""}
+						disabled={!isFormSubmittable || isLoading}
 					>
 						{!error && isLoading ? (
 							<ButtonLoading dotsColor="#727e86" />
-						) : isFormValid ? (
+						) : isFormSubmittable ? (
 							"Оформить заказ"
 						) : (
 							"Заполните все поля"
 						)}
 					</button>
+
+					{isFormSubmittable && (
+						<button
+							type="button"
+							className="btn btn-outline-secondary ml-2"
+							disabled={isLoading}
+							onClick={clearForm}
+						>
+							Очистить
+						</button>
+					)}
 				</div>
 
 				{!isLoading && error && (
