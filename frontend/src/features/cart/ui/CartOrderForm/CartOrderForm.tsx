@@ -13,6 +13,19 @@ import {
 import "./CartOrderForm.scss";
 
 const USER_ORDER_DATA_STORAGE_KEY = "userOrderData";
+const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 часов (в миллисекундах)
+
+/**
+ * Интерфейс, описывающий структуру сохранённых данных формы заказа
+ * в localStorage.
+ */
+interface IStoredFormData {
+	/** Данные формы, сохранённые в localStorage */
+	data: IOrderFormData;
+
+	/** Время хранения данных в localStorage */
+	timestamp: number;
+}
 
 /**
  * Начальное состояние данных формы корзины.
@@ -39,7 +52,26 @@ const INITIAL_FORM_DATA: IOrderFormData = {
  */
 const getStoredFormData = (): IOrderFormData => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
-	return savedData ? JSON.parse(savedData) : INITIAL_FORM_DATA;
+	if (!savedData) return INITIAL_FORM_DATA;
+
+	try {
+		const parsed = JSON.parse(savedData);
+		const now = Date.now();
+
+		if (parsed.data && typeof parsed.timestamp === 'number') {
+			if (now - parsed.timestamp > EXPIRATION_TIME) {
+				localStorage.removeItem(USER_ORDER_DATA_STORAGE_KEY);
+				return INITIAL_FORM_DATA;
+			}
+			return parsed.data;
+		}
+
+		localStorage.removeItem(USER_ORDER_DATA_STORAGE_KEY);
+		return INITIAL_FORM_DATA;
+	} catch {
+		localStorage.removeItem(USER_ORDER_DATA_STORAGE_KEY);
+		return INITIAL_FORM_DATA;
+	}
 };
 
 /**
@@ -47,7 +79,15 @@ const getStoredFormData = (): IOrderFormData => {
  */
 const hasStoredFormData = (): boolean => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
-	return !!savedData;
+	if (!savedData) return false;
+
+	try {
+		const parsed: IStoredFormData = JSON.parse(savedData);
+		const now = Date.now();
+		return now - parsed.timestamp <= EXPIRATION_TIME;
+	} catch {
+		return false;
+	}
 };
 
 /**
@@ -77,11 +117,13 @@ interface ICartOrderFormProps {
  * Компонент формы оформления заказа.
  */
 export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
-	const [formData, setFormData] = useState(getStoredFormData());
+	const [formData, setFormData] = useState<IOrderFormData>(getStoredFormData());
 	const [agreement, setAgreement] = useState(false);
-	const [shouldPersistFormData, setShouldPersistFormData] = useState(
+	const [shouldPersistFormData, setShouldPersistFormData] = useState<boolean>(
 		hasStoredFormData(),
 	);
+
+	console.log(formData);
 
 	const [debouncedPhone] = useDebounce(formData.phone, 500);
 
@@ -106,9 +148,13 @@ export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 
 	const syncFormDataWithStorage = () => {
 		if (shouldPersistFormData) {
+			const dataToStore: IStoredFormData = {
+				data: formData,
+				timestamp: Date.now(),
+			};
 			localStorage.setItem(
 				USER_ORDER_DATA_STORAGE_KEY,
-				JSON.stringify(formData),
+				JSON.stringify(dataToStore),
 			);
 		} else {
 			localStorage.removeItem(USER_ORDER_DATA_STORAGE_KEY);

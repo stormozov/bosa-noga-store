@@ -1,5 +1,7 @@
 import "./MainBanner.scss";
 
+const basename = import.meta.env.VITE_BASENAME;
+
 /**
  * Тип, описывающий данные об одном баннере
  */
@@ -29,7 +31,7 @@ export function MainBanner({ banners }: IMainBannerProps) {
 	return (
 		<div className="main-banner">
 			<div className="main-banner__item" key={banner.text}>
-				<img src={banner.src} alt={banner.text} className="img-fluid" />
+				<img src={`${basename}${banner.src}`} alt={banner.text} className="img-fluid" />
 				<h2 className="main-banner__item-header d-flex align-items-center justify-content-center m-0">
 					{banner.text}
 				</h2>
