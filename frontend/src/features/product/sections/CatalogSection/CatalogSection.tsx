@@ -320,7 +320,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 						<p className="text-center color-error">{itemsError.message}</p>
 						<button
 							type="button"
-							className="btn btn-ghost mt-1rem"
+							className="btn btn-ghost d-block mt-1rem mx-auto"
 							onClick={() =>
 								loadItemsRef.current.loadFn(activeCategoryId, urlSearchQuery)
 							}
