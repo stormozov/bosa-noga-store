@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 import { useApiGet } from "@/api";
 import { ContentPreloader } from "@/features/Preloader";
 import { type ProductCardType, ProductList } from "@/features/product";
@@ -29,12 +31,19 @@ const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/top-sales`;
 export function HitsSection() {
 	const { data, loading, error } = useApiGet<ProductCardType[]>(API_URL);
 
+	const isEmpty = data && data.length > 0;
+
 	return (
-		<section className="top-sales-section min-height-300 pt-4rem">
+		<section className={classNames("top-sales-section pt-4rem", {
+			"min-height-300": isEmpty
+		})}>
 			<h2 className="text-center">Хиты продаж!</h2>
+
 			{loading && <ContentPreloader />}
-			{error && null}
-			{data && <ProductList products={data} />}
+			{!loading && error && null}
+			{!loading && !error && isEmpty && (
+				<ProductList products={data} />
+			)}
 		</section>
 	);
 }
