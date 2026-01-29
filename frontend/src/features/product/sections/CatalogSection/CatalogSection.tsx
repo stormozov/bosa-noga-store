@@ -73,7 +73,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	const [activeCategoryId, setActiveCategoryId] = useState(0);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [localSearchQuery, setLocalSearchQuery] = useState("");
-	const [isLoadingCategoryChange, setIsLoadingCategoryChange] = useState(false);
+	const [isLoadingData, setIsLoadingData] = useState(false);
 
 	// Рефы
 	const isMountedRef = useRef(true);
@@ -138,10 +138,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 			const controller = new AbortController();
 			loadItemsRef.current.abortController = controller;
 
-			// Устанавливаем флаг загрузки при смене категории
-			if (categoryId !== activeCategoryIdRef.current) {
-				setIsLoadingCategoryChange(true);
-			}
+			setIsLoadingData(true);
 
 			resetItems();
 
@@ -160,12 +157,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 					console.error("Failed to load items:", error);
 				}
 			} finally {
-				if (
-					isMountedRef.current &&
-					categoryId !== activeCategoryIdRef.current
-				) {
-					setIsLoadingCategoryChange(false);
-				}
+				setIsLoadingData(false);
 				if (loadItemsRef.current.abortController === controller) {
 					loadItemsRef.current.abortController = null;
 				}
@@ -200,7 +192,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 	// Обработчик подгрузки новой порции товаров
 	const handleLoadMore = useCallback(() => {
-		if (!hasMore || loadingMore || isLoadingCategoryChange) return;
+		if (!hasMore || loadingMore || isLoadingData) return;
 
 		const params: ApiParams = {};
 		if (activeCategoryId !== 0) params.categoryId = activeCategoryId;
@@ -210,7 +202,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	}, [
 		hasMore,
 		loadingMore,
-		isLoadingCategoryChange,
+		isLoadingData,
 		activeCategoryId,
 		urlSearchQuery,
 		loadMoreItems,
@@ -256,17 +248,17 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		hasMore &&
 		items.length > 0 &&
 		!loadingInitial &&
-		!isLoadingCategoryChange;
-	
+		!isLoadingData;
+
 	// Условие для отображения блока "Ничего не найдено"
 	const shouldShowNotFound =
 		!loadingInitial &&
-		!isLoadingCategoryChange &&
+		!isLoadingData &&
 		!itemsError &&
 		items.length === 0;
 
 	// Условие для отображения блока "Загрузка..."
-	const shouldShowLoading = loadingInitial || isLoadingCategoryChange;
+	const shouldShowLoading = loadingInitial || isLoadingData;
 
 	// Конфигурация для формы поиска
 	const searchFormConfig: ISearchFormProps = {
@@ -284,7 +276,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		isLoading: loadingMore,
 		hasMore: hasMore,
 		disabled:
-			!hasMore || loadingMore || isLoadingCategoryChange || loadingInitial,
+			!hasMore || loadingMore || isLoadingData || loadingInitial,
 		onClick: handleLoadMore,
 	};
 
@@ -323,7 +315,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 			<div className="catalog-section__items">
 				{shouldShowLoading && <ContentPreloader />}
 
-				{!loadingInitial && !isLoadingCategoryChange && itemsError && (
+				{!loadingInitial && !isLoadingData && itemsError && (
 					<div className="catalog-section__error">
 						<p className="text-center color-error">{itemsError.message}</p>
 						<button
@@ -354,7 +346,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 					</div>
 				)}
 
-				{items.length > 0 && !loadingInitial && !isLoadingCategoryChange && (
+				{items.length > 0 && !loadingInitial && !isLoadingData && (
 					<AnimatedProductList products={items} />
 				)}
 
