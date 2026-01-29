@@ -1,12 +1,8 @@
-import { v4 as uuidv4 } from "uuid";
-
 /**
  * Интерфейс, описывающий свойства компонента {@link CatalogCategoriesSkeleton}.
  */
 interface ICatalogCategoriesSkeletonProps {
-	/**
-	 * Количество категорий, которые нужно отобразить.
-	 */
+	/** Количество категорий, которые нужно отобразить. */
 	count: number;
 }
 
@@ -24,9 +20,9 @@ export function CatalogCategoriesSkeleton({
 }: ICatalogCategoriesSkeletonProps) {
 	return (
 		<div className="catalog-categories__skeleton-container">
-			{Array.from({ length: count }).map(() => (
+			{Array.from({ length: count }).map((_, idx) => (
 				<div
-					key={`skeleton-${uuidv4()}`}
+					key={`skeleton-${idx}`}
 					className="catalog-categories__skeleton-item"
 				/>
 			))}
