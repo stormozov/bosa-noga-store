@@ -1,7 +1,8 @@
+import { DEBUG } from "@/configs/config";
+
 import type { ICalculateTotalsUtils, ICartItem } from "../types";
 
-const DEBUG = import.meta.env.MODE === "development";
-const CART_STORAGE_KEY = "cart";
+export const CART_STORAGE_KEY = "cart";
 
 /**
  * Загружает содержимое корзины из localStorage при инициализации приложения.

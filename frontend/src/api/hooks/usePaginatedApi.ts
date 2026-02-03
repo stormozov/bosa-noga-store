@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { DEBUG } from "@/configs/config";
+
 import { get } from "../core";
 import type {
 	ApiParams,
 	IPaginatedApiParams,
 	IPaginatedApiResult,
 } from "../types";
-
-const DEBUG = import.meta.env.MODE === "development";
 
 /**
  * Кастомный хук для работы с постраничным API.

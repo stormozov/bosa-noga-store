@@ -1,14 +1,4 @@
-/**
- * Базовый URL API, получаемый из переменных окружения.
- *
- * Используется для формирования всех эндпоинтов API. Значение берётся 
- * из переменной окружения `VITE_API_BASE_URL`, заданной в файле `.env`.
- *
- * @example
- * // При значении VITE_API_BASE_URL=http://localhost:3000
- * API_BASE_URL === "http://localhost:3000"
- */
-const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from "@/configs/config";
 
 /**
  * URL эндпоинта для работы с товарами (items).

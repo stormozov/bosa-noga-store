@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 
 import { useApiGet } from "@/api";
 import bannersConfig from "@/configs/banners.json";
+import { API_BASE_URL } from "@/configs/config";
 import { useCart } from "@/features/cart";
 import { ContentPreloader } from "@/features/Preloader";
 import {
@@ -14,8 +15,6 @@ import { useNavigateWithScrollReset } from "@/shared/hooks";
 import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
  * Компонент страницы товара.

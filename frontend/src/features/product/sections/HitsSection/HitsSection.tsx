@@ -1,6 +1,7 @@
 import classNames from "classnames";
 
 import { useApiGet } from "@/api";
+import { API_BASE_URL } from "@/configs/config";
 import { ContentPreloader } from "@/features/Preloader";
 import { type ProductCardType, ProductList } from "@/features/product";
 
@@ -9,7 +10,7 @@ import "./HitsSection.scss";
 /**
  * API-эндпоинт для получения списка хитов продаж.
  */
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/top-sales`;
+const API_URL = `${API_BASE_URL}/api/top-sales`;
 
 /**
  * Компонент секции "Хиты продаж", отображающий список популярных товаров.
