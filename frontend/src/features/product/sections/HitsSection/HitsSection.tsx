@@ -1,5 +1,3 @@
-import classNames from "classnames";
-
 import { useApiGet } from "@/api";
 import { API_BASE_URL } from "@/configs/config";
 import { ContentPreloader } from "@/features/Preloader";
@@ -32,19 +30,20 @@ const API_URL = `${API_BASE_URL}/api/top-sales`;
 export function HitsSection() {
 	const { data, loading, error } = useApiGet<ProductCardType[]>(API_URL);
 
-	const isEmpty = data && data.length > 0;
+	if (error) return null;
+
+	if (!loading && (!data || data.length === 0)) return null;
+
+	const products = !loading && data ? data : null;
 
 	return (
-		<section className={classNames("top-sales-section pt-4rem", {
-			"min-height-300": isEmpty
-		})}>
+		<section className="top-sales-section pt-4rem">
 			<h2 className="text-center">Хиты продаж!</h2>
-
-			{loading && <ContentPreloader />}
-			{!loading && error && null}
-			{!loading && !error && isEmpty && (
-				<ProductList products={data} />
-			)}
+			{loading ? (
+				<ContentPreloader />
+			) : products ? (
+				<ProductList products={products} />
+			) : null}
 		</section>
 	);
 }
