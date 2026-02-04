@@ -1,27 +1,25 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { REHYDRATE } from "redux-persist";
 
 import productsConfig from "@/configs/product.json";
 import type {
 	AddToCartPayload,
 	ICartItem,
 	ICartState,
+	RehydrateAction,
 	RemoveFromCartPayload,
 	RestoreCartPayload,
 	UpdateQuantityPayload,
 } from "../types";
-import {
-	calculateTotals,
-	clearCartFromStorage,
-	loadCartFromStorage,
-	saveCartToStorage,
-} from "../utils";
+import { calculateTotals, handleRehydrate } from "../utils";
 
 /**
  * Инициализация состояния слайса корзины
  */
 const initialState: ICartState = {
-	items: loadCartFromStorage(),
-	...calculateTotals(loadCartFromStorage()),
+	items: [],
+	totalAmount: 0,
+	totalCount: 0,
 };
 
 /**
@@ -66,8 +64,6 @@ const cartSlice = createSlice({
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
-
-			saveCartToStorage(state.items);
 		},
 
 		// Удаление товара из корзины
@@ -82,8 +78,6 @@ const cartSlice = createSlice({
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
-
-			saveCartToStorage(state.items);
 		},
 
 		// Изменение количества товара
@@ -106,8 +100,6 @@ const cartSlice = createSlice({
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
-
-			saveCartToStorage(state.items);
 		},
 
 		// Очистка корзины (после успешного заказа)
@@ -115,8 +107,6 @@ const cartSlice = createSlice({
 			state.items = [];
 			state.totalAmount = 0;
 			state.totalCount = 0;
-
-			clearCartFromStorage();
 		},
 
 		// Восстановление корзины
@@ -126,6 +116,14 @@ const cartSlice = createSlice({
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(REHYDRATE, (state, action: RehydrateAction) => {
+			const items = action.payload?.cart?.items;
+			if (!items) return;
+
+			handleRehydrate(state, items);
+		});
 	},
 });
 

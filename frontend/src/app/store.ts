@@ -1,34 +1,57 @@
 import { configureStore } from "@reduxjs/toolkit";
+import {
+	FLUSH,
+	PAUSE,
+	PERSIST,
+	PURGE,
+	persistReducer,
+	persistStore,
+	REGISTER,
+	REHYDRATE,
+} from "redux-persist";
+import createWebStorage from "redux-persist/es/storage/createWebStorage";
 
-import { cartLogger, cartReducer } from "@/features/cart";
+import { cartLogger, cartReducer, cartTransform } from "@/features/cart";
 
-/**
- * Экземпляр хранилища Redux для приложения.
- *
- * Обеспечивает централизованное управление состоянием приложения
- * с оптимизированной производительностью и встроенными механизмами отладки.
- *
- * @example
- * ```typescript
- * // Получение состояния
- * const state = store.getState();
- *
- * // Отправка действия
- * store.dispatch(addToCart({ id: 1, quantity: 2 }));
- *
- * // Подписка на изменения состояния
- * store.subscribe(() => console.log('Состояние изменилось:', store.getState()));
- * ```
- */
+const createNoopStorage = () => {
+	return {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		getItem(_key: string): Promise<null> {
+			return Promise.resolve(null);
+		},
+		setItem(_key: string, value: string): Promise<string> {
+			return Promise.resolve(value);
+		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		removeItem(_key: string): Promise<void> {
+			return Promise.resolve();
+		},
+	};
+};
+
+const storage =
+	typeof window !== "undefined"
+		? createWebStorage("local")
+		: createNoopStorage();
+
+const persistConfig = {
+	key: "cart",
+	storage,
+	transforms: [cartTransform],
+};
+
+const persistedReducer = persistReducer(persistConfig, cartReducer);
+
 export const store = configureStore({
 	reducer: {
-		cart: cartReducer,
+		cart: persistedReducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({
 			serializableCheck: {
-				ignoredActions: ["cart/addItem"],
-				ignoredPaths: ["meta.arg", "payload.timestamp"],
+				ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
 			},
 		}).concat(cartLogger),
 });
+
+export const persistor = persistStore(store);

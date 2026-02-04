@@ -1,3 +1,5 @@
+import type { REHYDRATE } from "redux-persist";
+
 /**
  * Интерфейс элемента корзины.
  *
@@ -89,6 +91,23 @@ export type UpdateQuantityPayload = {
  * Представляет собой массив элементов корзины.
  */
 export type RestoreCartPayload = ICartItem[];
+
+/**
+ * Тип данных для действия восстановления корзины.
+ */
+export interface RehydratePayload {
+	cart?: Omit<ICartState, "totalAmount" | "totalCount">;
+}
+
+/**
+ * Тип данных для действия восстановления корзины.
+ */
+export interface RehydrateAction {
+	type: typeof REHYDRATE;
+	payload: RehydratePayload;
+	key: string;
+	err?: Error;
+}
 
 /**
  * Интерфейс утилиты для расчёта итоговых значений корзины.

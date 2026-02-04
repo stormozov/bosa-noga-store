@@ -1,34 +1,5 @@
-import { DEBUG } from "@/configs/config";
-
-import type { ICalculateTotalsUtils, ICartItem } from "../types";
-
-export const CART_STORAGE_KEY = "cart";
-
-/**
- * Загружает содержимое корзины из localStorage при инициализации приложения.
- *
- * @returns {ICartItem[]} Массив элементов корзины ({@link ICartItem})
- * из localStorage или пустой массив при ошибке/отсутствии данных.
- *
- * @throws {Error} Ловит и обрабатывает ошибки чтения из localStorage (например,
- * при переполнении или нарушении политики безопасности), выводит сообщение
- * в консоль (если `DEBUG === true`).
- *
- * @example
- * ```typescript
- * const cartItems = loadCartFromStorage();
- * console.log("Загруженная корзина:", cartItems);
- * ```
- */
-export const loadCartFromStorage = (): ICartItem[] => {
-	try {
-		const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-		return savedCart ? JSON.parse(savedCart) : [];
-	} catch (error) {
-		if (DEBUG) console.error("Error loading cart from localStorage:", error);
-		return [];
-	}
-};
+import type { WritableDraft } from "@reduxjs/toolkit";
+import type { ICalculateTotalsUtils, ICartItem, ICartState } from "../types";
 
 /**
  * Пересчитывает итоговые значения для корзины на основе списка товаров.
@@ -61,49 +32,15 @@ export const calculateTotals = (items: ICartItem[]): ICalculateTotalsUtils => {
 };
 
 /**
- * Сохраняет текущее состояние корзины в localStorage.
- *
- * Сериализует массив элементов корзины в JSON и записывает его в localStorage
- * по ключу `CART_STORAGE_KEY`. В случае ошибки (например, переполнения
- * хранилища или нарушения политики безопасности) выводит сообщение в консоль
- * (если `DEBUG === true`).
- *
- * @param {ICartItem[]} items - Массив элементов корзины, который нужно сохранить.
- *
- * @throws {Error} Ловит и обрабатывает ошибки записи в localStorage, выводит
- * сообщение в консоль при активации режима отладки (`DEBUG === true`).
- *
- * @example
- * ```typescript
- * const cartItems: ICartItem[] = [
- *   { id: 1, count: 2, total: 400 }
- * ];
- * saveCartToStorage(cartItems);
- * console.log("Корзина сохранена в localStorage");
- * ```
+ * Обновляет состояние корзины на основе списка товаров.
  */
-export const saveCartToStorage = (items: ICartItem[]) => {
-	try {
-		localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-	} catch (error) {
-		if (DEBUG) console.error("Error saving cart to localStorage:", error);
-	}
-};
+export const handleRehydrate = (
+	state: WritableDraft<ICartState>,
+	items: ICartItem[],
+) => {
+	const { totalAmount, totalCount } = calculateTotals(items);
 
-/**
- * Очищает корзину в localStorage.
- *
- * Удаляет ключ `CART_STORAGE_KEY` из localStorage. В случае ошибки (например,
- * нарушения политики безопасности) выводит сообщение в консоль (если
- * `DEBUG === true`).
- *
- * @throws {Error} Ловит и обрабатывает ошибки очистки localStorage, выводит
- * сообщение в консоль при активации режима отладки (`DEBUG === true`).
- */
-export const clearCartFromStorage = () => {
-	try {
-		localStorage.removeItem(CART_STORAGE_KEY);
-	} catch (error) {
-		if (DEBUG) console.error("Error clearing cart from localStorage:", error);
-	}
+	state.items = items;
+	state.totalAmount = totalAmount;
+	state.totalCount = totalCount;
 };
