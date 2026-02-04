@@ -85,7 +85,7 @@ export const usePaginatedApi = <T>(
 				const queryString = urlParams.toString();
 				const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
-				if (DEBUG) console.log(`Main fetch: ${url}`);
+				if (DEBUG) console.log(`Запрос: ${url}`);
 
 				const result = await get<T[]>(url, {
 					...options,
@@ -94,49 +94,14 @@ export const usePaginatedApi = <T>(
 
 				if (!isMounted.current) return;
 
+				const nextHasMore = result.length === itemsPerPage;
+
 				if (isInitial) {
 					setData(result);
 					setOffset(0);
 				} else if (append) {
 					setData((prev) => [...prev, ...result]);
 					setOffset(requestOffset);
-				}
-
-				let nextHasMore = false;
-
-				if (result.length < itemsPerPage) {
-					nextHasMore = false;
-				} else if (result.length === itemsPerPage) {
-					const nextOffset = requestOffset + itemsPerPage;
-
-					const checkParams = new URLSearchParams(urlParams);
-					checkParams.set("offset", nextOffset.toString());
-					const checkUrl = `${baseUrl}?${checkParams.toString()}`;
-
-					if (DEBUG) console.log(`Pagination check: ${checkUrl}`);
-
-					try {
-						const checkResult = await get<T[]>(checkUrl, {
-							...options,
-							signal: controller.signal,
-						});
-
-						nextHasMore = checkResult.length > 0;
-					} catch (checkError) {
-						if (
-							DEBUG &&
-							checkError instanceof Error &&
-							checkError.name !== "AbortError"
-						) {
-							console.warn(
-								"Pagination check failed, assuming no more pages",
-								checkError,
-							);
-						}
-						nextHasMore = false;
-					}
-				} else {
-					nextHasMore = true;
 				}
 
 				setHasMore(nextHasMore);

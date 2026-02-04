@@ -252,10 +252,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 
 	// Условие для отображения блока "Ничего не найдено"
 	const shouldShowNotFound =
-		!loadingInitial &&
-		!isLoadingData &&
-		!itemsError &&
-		items.length === 0;
+		!loadingInitial && !isLoadingData && !itemsError && items.length === 0;
 
 	// Условие для отображения блока "Загрузка..."
 	const shouldShowLoading = loadingInitial || isLoadingData;
@@ -275,8 +272,7 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	const loadMoreConfig = {
 		isLoading: loadingMore,
 		hasMore: hasMore,
-		disabled:
-			!hasMore || loadingMore || isLoadingData || loadingInitial,
+		disabled: !hasMore || loadingMore || isLoadingData || loadingInitial,
 		onClick: handleLoadMore,
 	};
 
