@@ -1,33 +1,7 @@
 import "./ProductCountSelector.scss";
 
-/**
- * Интерфейс свойств для компонента селектора количества товара.
- *
- * @interface IProductCountSelectorProps
- */
 interface IProductCountSelectorProps {
-	/**
-	 * Текущее количество товара в корзине/заказе.
-	 *
-	 * Должно быть положительным числом (≥ 1).
-	 */
 	currentCount: number;
-
-	/**
-	 * Обработчик изменения количества товара.
-	 *
-	 * Вызывается при увеличении или уменьшении количества.
-	 * Получает новое значение количества и должен обновить состояние компонента.
-	 *
-	 * @param {number} newCount - Новое количество товара (должно быть ≥ 1).
-	 *
-	 * @example
-	 * ```ts
-	 * const handleCountChange = (newCount: number) => {
-	 *   setProductCount(newCount);
-	 * };
-	 * ```
-	 */
 	handleCountChange: (newCount: number) => void;
 }
 

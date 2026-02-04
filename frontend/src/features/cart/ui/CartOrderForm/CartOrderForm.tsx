@@ -20,36 +20,15 @@ const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 часов (в миллисе
  * в localStorage.
  */
 interface IStoredFormData {
-	/** Данные формы, сохранённые в localStorage */
 	data: IOrderFormData;
-
-	/** Время хранения данных в localStorage */
 	timestamp: number;
 }
 
-/**
- * Начальное состояние данных формы корзины.
- *
- * Используется для инициализации формы оформления заказа. Все поля
- * соответствуют интерфейсу {@link IOrderFormData} и содержат пустые строки
- * в качестве значений по умолчанию.
- *
- * @example
- * ```ts
- * const formData = { ...INITIAL_FORM_DATA };
- * // formData: { phone: "", address: "" }
- * ```
- *
- * @see {@link IOrderFormData} - интерфейс структуры данных формы
- */
 const INITIAL_FORM_DATA: IOrderFormData = {
 	phone: "",
 	address: "",
 };
 
-/**
- * Возвращает начальное состояние данных формы корзины из localStorage.
- */
 const getStoredFormData = (): IOrderFormData => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
 	if (!savedData) return INITIAL_FORM_DATA;
@@ -74,9 +53,6 @@ const getStoredFormData = (): IOrderFormData => {
 	}
 };
 
-/**
- * Проверяет, сохранены ли данные формы корзины в localStorage.
- */
 const hasStoredFormData = (): boolean => {
 	const savedData = localStorage.getItem(USER_ORDER_DATA_STORAGE_KEY);
 	if (!savedData) return false;
@@ -94,9 +70,6 @@ const hasStoredFormData = (): boolean => {
  * Проверяет, заполнены ли все обязательные поля формы заказа.
  *
  * Учитывает только пробельные символы (trim), не валидирует формат.
- *
- * @param formData - Данные формы заказа
- * @returns true, если phone и address содержат непустые значения
  */
 const isOrderFormDataComplete = ({
 	phone,
@@ -105,25 +78,16 @@ const isOrderFormDataComplete = ({
 	return phone.trim() !== "" && address.trim() !== "";
 };
 
-/**
- * Интерфейс, описывающий свойства компонента {@link CartOrderForm}.
- */
 interface ICartOrderFormProps {
-	/** Функция, вызываемая при отправке формы */
 	handleSubmit?: () => void;
 }
 
-/**
- * Компонент формы оформления заказа.
- */
 export function CartOrderForm({ handleSubmit }: ICartOrderFormProps) {
 	const [formData, setFormData] = useState<IOrderFormData>(getStoredFormData());
 	const [agreement, setAgreement] = useState(false);
 	const [shouldPersistFormData, setShouldPersistFormData] = useState<boolean>(
 		hasStoredFormData(),
 	);
-
-	console.log(formData);
 
 	const [debouncedPhone] = useDebounce(formData.phone, 500);
 

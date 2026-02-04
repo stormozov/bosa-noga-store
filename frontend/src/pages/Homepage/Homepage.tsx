@@ -4,15 +4,12 @@ import { MainBanner } from "@/shared/ui";
 
 import "./Homepage.scss";
 
-/**
- * Компонент главной страницы
- */
 export default function Homepage() {
 	return (
 		<>
 			<MainBanner banners={bannersConfig.main} />
 			<HitsSection />
-			<CatalogSection visibility={{ isSearchVisible: false }} />
+			<CatalogSection visibilityConfig={{ isSearchVisible: false }} />
 		</>
 	);
 }

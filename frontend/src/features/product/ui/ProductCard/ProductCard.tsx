@@ -5,30 +5,10 @@ import { formatRubles } from "@/shared/utils";
 
 import "./ProductCard.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link ProductCard}.
- */
 interface IProductCartProps {
-	/** Данные о товаре, которые необходимо отобразить в карточке. */
 	product: ProductCardType;
 }
 
-/**
- * Компонент карточки товара, отображающий краткую информацию о товаре.
- *
- * Показывает изображение, название, цену и кнопку-ссылку для перехода
- * к странице товара. Используется внутри компонента {@link ProductList}
- * для рендеринга отдельных товаров.
- *
- * @example
- * <ProductCard product={product} />
- *
- * @remarks
- * - Первое изображение из массива `images` используется как основное.
- * - Атрибут `alt` на изображении содержит название товара для доступности.
- * - Класс `h-100` обеспечивает равную высоту карточек в одной строке.
- * - Ссылка ведёт на страницу деталей товара по его `id`.
- */
 export function ProductCard({ product }: IProductCartProps) {
 	const { id, title, price, images } = product;
 

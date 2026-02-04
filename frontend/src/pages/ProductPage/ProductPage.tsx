@@ -16,9 +16,6 @@ import { MainBanner, TwoColumnTable } from "@/shared/ui";
 
 import "./ProductPage.scss";
 
-/**
- * Компонент страницы товара.
- */
 export default function ProductPage() {
 	const [activeSize, setActiveSize] = useState<string | null>(null);
 	const [productCount, setProductCount] = useState(1);

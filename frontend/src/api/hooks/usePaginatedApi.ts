@@ -9,16 +9,6 @@ import type {
 	IPaginatedApiResult,
 } from "../types";
 
-/**
- * Кастомный хук для работы с постраничным API.
- *
- * Позволяет загружать данные постранично с поддержкой фильтрации, подгрузки
- * и отмены запросов. Управляет состоянием: начальная загрузка, подгрузка,
- * ошибка, наличие следующей страницы и т.д.
- *
- * @template T - Тип элементов, возвращаемых API (например, `Product`, `User`
- * и т.д.).
- */
 export const usePaginatedApi = <T>(
 	config: IPaginatedApiParams,
 ): IPaginatedApiResult<T> => {
@@ -40,18 +30,12 @@ export const usePaginatedApi = <T>(
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const isMounted = useRef(true);
 
-	/**
-	 * Функция для отмены существующего запроса.
-	 */
 	const abortRequest = useCallback(() => {
 		if (!abortControllerRef.current) return;
 		abortControllerRef.current.abort();
 		abortControllerRef.current = null;
 	}, []);
 
-	/**
-	 * Функция для выполнения HTTP-запроса с управлением состояния.
-	 */
 	const fetchData = useCallback(
 		async (
 			newParams: ApiParams = {},

@@ -5,11 +5,7 @@ import { useCart } from "@/features/cart";
 
 import "./CartWidget.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link CartWidget}.
- */
 interface ICartWidgetProps {
-	/** Дополнительные классы */
 	classes?: string;
 }
 

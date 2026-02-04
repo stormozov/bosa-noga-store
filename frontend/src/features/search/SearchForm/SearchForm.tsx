@@ -4,9 +4,6 @@ import type { ISearchFormProps } from "./types";
 
 import "./SearchForm.scss";
 
-/**
- * Компонент формы поиска товаров.
- */
 export function SearchForm({ value, handlers, config = {} }: ISearchFormProps) {
 	const { onChange, onClear, onSubmit, onKeyDown } = handlers;
 	const {

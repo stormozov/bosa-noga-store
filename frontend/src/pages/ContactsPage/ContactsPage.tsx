@@ -4,9 +4,6 @@ import { MainBanner } from "@/shared/ui";
 
 import "./ContactsPage.scss";
 
-/**
- * Компонент страницы «Контакты».
- */
 export default function ContactsPage() {
 	const { link: phoneLink, value: phoneNumber } = contactsConfig.phone.main;
 	const { link: emailLink, value: emailValue } = contactsConfig.email.main;

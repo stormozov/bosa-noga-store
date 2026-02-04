@@ -2,28 +2,15 @@ import "./MainBanner.scss";
 
 const basename = import.meta.env.VITE_BASENAME;
 
-/**
- * Тип, описывающий данные об одном баннере
- */
-type MainBannerType = {
-	/** Текст баннера */
+interface MainBannerItem {
 	text: string;
-
-	/** Ссылка на изображение баннера */
 	src: string;
 };
 
-/**
- * Интерфейс, описывающий свойства компонента {@link MainBanner}.
- */
 interface IMainBannerProps {
-	/** Список баннеров */
-	banners: MainBannerType[];
+	banners: MainBannerItem[];
 }
 
-/**
- * Компонент основного баннера
- */
 export function MainBanner({ banners }: IMainBannerProps) {
 	const banner = banners[0];
 	if (!banner) return null;

@@ -40,14 +40,6 @@ interface IScrollToTopButtonProps {
  * @remark
  * Использует {@link [framer-motion](https://www.npmjs.com/package/framer-motion)}
  * для анимации появления/скрытия;
- *
- * @example
- * ```tsx
- * <ScrollToTopButton
- *   threshold={500}
- *   buttonLabel="Наверх страницы"
- * />
- * ```
  */
 export function ScrollToTopButton({
 	threshold = SCROLL_THRESHOLD,

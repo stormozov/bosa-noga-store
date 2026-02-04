@@ -8,9 +8,6 @@ import { MainBanner } from "@/shared/ui";
 
 import "./AboutPage.scss";
 
-/**
- * Компонент страницы «О магазине».
- */
 export default function AboutPage() {
 	const { mdContent, mdLoading, mdError } = useMarkdown("./md/about.md");
 

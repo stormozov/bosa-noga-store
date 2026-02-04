@@ -5,9 +5,6 @@ import { NavList, PaySystems, parsePaySystems, SocialsList } from "@/shared/ui";
 
 import "./PageFooter.scss";
 
-/**
- * Компонент подвала страницы.
- */
 export default function PageFooter() {
 	const { phone, email, workTime, socials } = contactsConfig;
 	const {

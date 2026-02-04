@@ -14,16 +14,7 @@ interface IPaySystemsProps {
  * Компонент списка платежных систем.
  *
  * Отображает коллекцию доступных платежных систем, фильтруя только видимые
- * элементы (у которых `visible === true`). Каждая система рендерится через
- * компонент {@link PaySystemItem}.
- *
- * @example
- * const systems: IPaySystemProps[] = [
- *   { displayName: "Visa", link: "https://visa.com", visible: true },
- *   { displayName: "Qiwi", link: "", visible: false }
- * ]
- *
- * <PaySystems systems={systems} /> // отобразит только Visa, т.к. Qiwi скрыт
+ * элементы (у которых `visible === true`).
  */
 export function PaySystems({ systems }: IPaySystemsProps) {
 	const visibleSystems = systems.filter((system) => system.visible);

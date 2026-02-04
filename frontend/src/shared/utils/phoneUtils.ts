@@ -1,14 +1,11 @@
 /**
  * Проверяет корректность российского номера телефона
- *
- * @param phone - номер телефона в любом формате
- * @returns boolean - true если номер соответствует российскому формату
  */
 export function isValidRussianPhoneNumber(phone: string): boolean {
 	// Удаляем все символы кроме цифр
 	const cleaned = phone.replace(/\D/g, "");
 
-	// Проверяем длину и первую цифру
+	// Проверяем длину номера
 	if (cleaned.length !== 11) return false;
 
 	// Проверяем первую цифру
@@ -19,8 +16,7 @@ export function isValidRussianPhoneNumber(phone: string): boolean {
 /**
  * Форматирует номер телефона в стандартный российский формат
  *
- * @param phone - номер телефона в любом формате
- * @returns string - отформатированный номер вида "+7 (999) 123-45-67"
+ * Пример выходного значения: "+7 (123) 456-78-90"
  */
 export function formatRussianPhoneNumber(phone: string): string {
 	// Удаляем все символы кроме цифр
@@ -28,10 +24,8 @@ export function formatRussianPhoneNumber(phone: string): string {
 
 	// Обрабатываем случаи с разной длиной номера
 	if (cleaned.length > 11) {
-		// Берем последние 11 цифр для номеров с дополнительными символами
 		cleaned = cleaned.slice(-11);
 	} else if (cleaned.length < 11) {
-		// Для коротких номеров возвращаем исходное значение
 		return phone;
 	}
 
@@ -39,7 +33,6 @@ export function formatRussianPhoneNumber(phone: string): string {
 	if (cleaned[0] === "8") {
 		cleaned = `7${cleaned.slice(1)}`;
 	} else if (cleaned[0] !== "7") {
-		// Если первая цифра не 7 и не 8 - добавляем 7 в начало
 		cleaned = `7${cleaned.slice(1, 11)}`;
 	}
 

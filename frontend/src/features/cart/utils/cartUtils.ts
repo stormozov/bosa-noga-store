@@ -8,13 +8,6 @@ import type { ICalculateTotalsUtils, ICartItem, ICartState } from "../types";
  * - общую сумму (`totalAmount`) — сумму полей `total` всех элементов;
  * - общее количество товаров (`totalCount`) — сумму полей `count` всех элементов.
  *
- * @param {ICartItem[]} items - Массив элементов корзины, для которых нужно
- * посчитать итоги.
- *
- * @returns {ICalculateTotalsUtils} Объект с двумя полями:
- *   - `totalAmount` — общая сумма всех товаров;
- *   - `totalCount` — общее количество единиц товаров.
- *
  * @example
  * ```typescript
  * const items: ICartItem[] = [

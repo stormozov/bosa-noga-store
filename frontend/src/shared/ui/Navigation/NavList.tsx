@@ -3,20 +3,11 @@ import { NavLink } from "react-router";
 
 import "./NavList.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link NavHeader}.
- */
 interface INavListProps {
-	/** Ссылки навигации, которые нужно отобразить */
 	links: Record<string, string>;
-
-	/** Дополнительные классы */
 	classes?: string;
 }
 
-/**
- * Компонент навигации в шапке страницы.
- */
 export function NavList({ links, classes }: INavListProps) {
 	return (
 		<ul className={classes}>

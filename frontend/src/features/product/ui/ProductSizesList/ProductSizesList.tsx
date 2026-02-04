@@ -5,34 +5,9 @@ import { ProductSizeBtn } from "../ProductSizeBtn";
 
 import "./ProductSizesList.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link ProductSizesList}.
- */
 interface ProductSizesListProps {
-	/**
-	 * Массив объектов с информацией о размерах товара.
-	 *
-	 * @see {@link IProductSize}
-	 */
 	sizes: IProductSize[];
-
-	/**
-	 * Текущий активный (выбранный) размер.
-	 */
 	activeSize: string | null;
-
-	/**
-	 * Обработчик события клика по размеру.
-	 *
-	 * @param {string} size - Обозначение выбранного размера.
-	 *
-	 * @example
-	 * ```ts
-	 * const handleSizeClick = (size: string) => {
-	 *   console.log(`Выбран размер: ${size}`);
-	 * };
-	 * ```
-	 */
 	onClick: (size: string) => void;
 }
 

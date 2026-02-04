@@ -1,4 +1,5 @@
 import classNames from "classnames";
+
 import "./LoadingFallback.scss";
 
 /**
@@ -6,9 +7,6 @@ import "./LoadingFallback.scss";
  */
 type LoadingSize = "small" | "medium" | "large";
 
-/**
- * Интерфейс, описывающий свойства компонента `LoadingFallback`.
- */
 interface ILoadingFallbackProps {
 	message?: string;
 	size?: LoadingSize;
@@ -16,12 +14,6 @@ interface ILoadingFallbackProps {
 
 /**
  * Компонент-заглушка, отображающий индикатор загрузки и опциональное сообщение.
- *
- * Используется в качестве `fallback` в `React.Suspense` или при ожидании данных.
- *
- * @example
- * ```tsx
- * <LoadingFallback message="Загружаем данные..." size="large" />
  * ```
  */
 export const LoadingFallback = ({

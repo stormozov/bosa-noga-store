@@ -5,11 +5,6 @@ import { HeaderLogo, NavList } from "@/shared/ui";
 
 import "./PageHeader.scss";
 
-/**
- * Компонент шапки страницы.
- *
- * Отображает верхнюю часть интерфейса приложения.
- */
 export default function PageHeader() {
 	const { links: navLinks, visible: navVisible } = navConfigs.header;
 

@@ -1,4 +1,3 @@
-// hooks/useCart.ts
 import { useCallback } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -18,20 +17,11 @@ import type {
 	UpdateQuantityPayload,
 } from "../types";
 
-/**
- * Интерфейс, описывающий возвращаемые значения хука {@link useCart}
- */
 interface IUseCartReturns {
-	/** Состояния корзины */
 	states: IUseCartStates;
-
-	/** Действия с корзиной */
 	actions: IUseCartActions;
 }
 
-/**
- * Кастомный хук для работы с корзиной
- */
 export const useCart = (): IUseCartReturns => {
 	const dispatch = useAppDispatch();
 
@@ -71,6 +61,7 @@ export const useCart = (): IUseCartReturns => {
 		[items],
 	);
 
+	// Возвращаемые значения
 	const hookStates: IUseCartStates = {
 		items,
 		totalAmount,

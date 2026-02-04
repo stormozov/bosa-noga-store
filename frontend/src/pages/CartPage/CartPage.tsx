@@ -20,9 +20,6 @@ const TABLE_HEADERS = [
 
 const getRandomOrderNumber = () => Math.floor(Math.random() * 1000);
 
-/**
- * Компонент страницы корзины.
- */
 export default function CartPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 

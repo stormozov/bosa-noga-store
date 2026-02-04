@@ -13,28 +13,20 @@ import type {
 } from "../types";
 import { calculateTotals, handleRehydrate } from "../utils";
 
-/**
- * Инициализация состояния слайса корзины
- */
 const initialState: ICartState = {
 	items: [],
 	totalAmount: 0,
 	totalCount: 0,
 };
 
-/**
- * Слайс корзины
- */
 const cartSlice = createSlice({
 	name: "cart",
 	initialState,
 	reducers: {
-		// Добавление товара в корзину
 		addItem: (state, action: PayloadAction<AddToCartPayload>) => {
 			const { id, size, price, title, count, image } = action.payload;
 			const addCount = count || productsConfig.minCountForOrder;
 
-			// Проверяем, есть ли уже такой товар с таким размером
 			const existingIndex = state.items.findIndex(
 				(item) => item.id === id && item.size === size,
 			);
@@ -47,7 +39,6 @@ const cartSlice = createSlice({
 				state.items[existingIndex].count = newCount;
 				state.items[existingIndex].total = newCount * price;
 			} else {
-				// Добавляем новый товар
 				const newItem: ICartItem = {
 					id,
 					title,
@@ -60,13 +51,11 @@ const cartSlice = createSlice({
 				state.items.push(newItem);
 			}
 
-			// Пересчитываем итоги
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
 		},
 
-		// Удаление товара из корзины
 		removeItem: (state, action: PayloadAction<RemoveFromCartPayload>) => {
 			const { id, size } = action.payload;
 
@@ -74,13 +63,11 @@ const cartSlice = createSlice({
 				(item) => !(item.id === id && item.size === size),
 			);
 
-			// Пересчитываем итоги
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
 		},
 
-		// Изменение количества товара
 		updateQuantity: (state, action: PayloadAction<UpdateQuantityPayload>) => {
 			const { id, size, count } = action.payload;
 			const itemIndex = state.items.findIndex(
@@ -96,20 +83,17 @@ const cartSlice = createSlice({
 				state.items[itemIndex].total = count * state.items[itemIndex].price;
 			}
 
-			// Пересчитываем итоги
 			const { totalAmount, totalCount } = calculateTotals(state.items);
 			state.totalAmount = totalAmount;
 			state.totalCount = totalCount;
 		},
 
-		// Очистка корзины (после успешного заказа)
 		clearCart: (state) => {
 			state.items = [];
 			state.totalAmount = 0;
 			state.totalCount = 0;
 		},
 
-		// Восстановление корзины
 		restoreCart: (state, action: PayloadAction<RestoreCartPayload>) => {
 			state.items = action.payload;
 			const { totalAmount, totalCount } = calculateTotals(action.payload);

@@ -5,17 +5,10 @@ import { formatRubles } from "@/shared/utils";
 
 import "./CartTableItem.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link CartTableItem}.
- */
 interface ICartTableItemProps {
-	/** Элемент корзины, данные которого нужно отобразить в таблице */
 	item: ICartItem;
 }
 
-/**
- * Компонент, отображающий одну позицию корзины.
- */
 export function CartTableItem({ item }: ICartTableItemProps) {
 	const { id, title, size, count, price, total } = item;
 

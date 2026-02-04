@@ -4,9 +4,6 @@ import { lazyWithSuspense } from "./utils";
 
 const basename: string = import.meta.env.VITE_BASENAME;
 
-/**
- * Маршрутизация приложения.
- */
 const router = createBrowserRouter(
 	[
 		{

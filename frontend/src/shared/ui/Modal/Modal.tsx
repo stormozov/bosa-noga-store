@@ -2,21 +2,12 @@ import { useLockBodyScroll } from "@/shared/hooks";
 
 import styles from "./Modal.module.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link Modal}.
- */
 interface IModalProps {
-	/** Дочерний элемент */
 	children: React.ReactNode;
-	/** Флаг */
 	isOpen: boolean;
-	/** Обработчик закрытия */
 	onClose: () => void;
 }
 
-/**
- * Компонент модального окна
- */
 export function Modal({ children, isOpen, onClose }: IModalProps) {
 	useLockBodyScroll(isOpen);
 

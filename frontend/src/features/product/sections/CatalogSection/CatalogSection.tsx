@@ -20,14 +20,7 @@ import "./CatalogSection.scss";
  * Интерфейс для рефа с функцией загрузки и контроллером
  */
 interface ILoadItemsRef {
-	/**
-	 * Контроллер запроса
-	 */
 	abortController: AbortController | null;
-
-	/**
-	 * Функция загрузки
-	 */
 	loadFn: (categoryId: number, query: string) => Promise<void>;
 }
 
@@ -37,19 +30,8 @@ interface ILoadItemsRef {
  * Позволяет управлять отображением отдельных компонентов интерфейса.
  */
 interface ICatalogSectionVisibilityConfig {
-	/**
-	 * Флаг, указывающий, должна ли быть видна навигация по категориям.
-	 */
 	isCategoryVisible?: boolean;
-
-	/**
-	 * Флаг, указывающий, должна ли быть видна кнопка "Загрузить ещё".
-	 */
 	isButtonMoreVisible?: boolean;
-
-	/**
-	 * Флаг, указывающий, должна ли быть видна форма поиска товаров.
-	 */
 	isSearchVisible?: boolean;
 }
 
@@ -57,18 +39,15 @@ interface ICatalogSectionVisibilityConfig {
  * Интерфейс, описывающий свойства компонента {@link CatalogSection}.
  */
 interface ICatalogSectionProps {
-	/**
-	 * Конфигурация видимости элементов интерфейса каталога.
-	 *
-	 * @see {@link ICatalogSectionVisibilityConfig}
-	 */
-	visibility?: ICatalogSectionVisibilityConfig;
+	visibilityConfig?: ICatalogSectionVisibilityConfig;
 }
 
 /**
  * Компонент секции каталога товаров с фильтрацией по категориям.
  */
-export function CatalogSection({ visibility }: ICatalogSectionProps) {
+export function CatalogSection({
+	visibilityConfig: visibility,
+}: ICatalogSectionProps) {
 	// Состояния
 	const [activeCategoryId, setActiveCategoryId] = useState(0);
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -121,14 +100,12 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 	// Синхронизация локального состояния с URL при mount и изменении URL
 	useEffect(() => setLocalSearchQuery(urlSearchQuery), [urlSearchQuery]);
 
-	// Функция для отмены существующего запроса
 	const abortExistingRequest = useCallback(() => {
 		if (!loadItemsRef.current.abortController) return;
 		loadItemsRef.current.abortController.abort();
 		loadItemsRef.current.abortController = null;
 	}, []);
 
-	// Основная функция загрузки товаров
 	const loadItems = useCallback(
 		async (categoryId: number, query: string) => {
 			abortExistingRequest();
@@ -177,7 +154,6 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		loadItemsRef.current.loadFn(activeCategoryId, urlSearchQuery);
 	}, [activeCategoryId, urlSearchQuery]);
 
-	// Обработчик очистки поиска
 	const handleClearSearch = useCallback(() => {
 		setLocalSearchQuery("");
 		const newParams = new URLSearchParams(searchParams);
@@ -185,12 +161,10 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		setSearchParams(newParams, { replace: true });
 	}, [searchParams, setSearchParams]);
 
-	// Обработчик выбора категории
 	const handleCategorySelect = useCallback((categoryId: number) => {
 		setActiveCategoryId(categoryId);
 	}, []);
 
-	// Обработчик подгрузки новой порции товаров
 	const handleLoadMore = useCallback(() => {
 		if (!hasMore || loadingMore || isLoadingData) return;
 
@@ -208,12 +182,10 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		loadMoreItems,
 	]);
 
-	// Обработчик формы поиска
 	const handleSearchChange = useCallback((value: string) => {
 		setLocalSearchQuery(value);
 	}, []);
 
-	// Обработчик отправки формы
 	const handleSearchSubmit = useCallback(() => {
 		const trimmedQuery = localSearchQuery.trim();
 
@@ -230,7 +202,6 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		setSearchParams(newParams);
 	}, [localSearchQuery, urlSearchQuery, searchParams, setSearchParams]);
 
-	// Обработчик нажатия клавиши во время ввода
 	const handleSearchKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === "Escape") {
@@ -242,7 +213,6 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		[handleClearSearch, handleSearchSubmit],
 	);
 
-	// Условие для отображения кнопки "Загрузить еще"
 	const shouldShowLoadMore =
 		isButtonMoreVisible &&
 		hasMore &&
@@ -250,14 +220,11 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		!loadingInitial &&
 		!isLoadingData;
 
-	// Условие для отображения блока "Ничего не найдено"
 	const shouldShowNotFound =
 		!loadingInitial && !isLoadingData && !itemsError && items.length === 0;
 
-	// Условие для отображения блока "Загрузка..."
 	const shouldShowLoading = loadingInitial || isLoadingData;
 
-	// Конфигурация для формы поиска
 	const searchFormConfig: ISearchFormProps = {
 		value: localSearchQuery,
 		handlers: {
@@ -268,7 +235,6 @@ export function CatalogSection({ visibility }: ICatalogSectionProps) {
 		},
 	};
 
-	// Конфигурация для кнопки "Загрузить еще"
 	const loadMoreConfig = {
 		isLoading: loadingMore,
 		hasMore: hasMore,

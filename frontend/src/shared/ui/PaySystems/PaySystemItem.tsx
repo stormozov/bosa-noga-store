@@ -1,5 +1,7 @@
 import classNames from "classnames";
+
 import { isValidUrl } from "@/shared/utils";
+
 import type { IPaySystemProps } from "./types";
 
 /**
@@ -12,18 +14,10 @@ interface IPaySystemItemProps {
 /**
  * Компонент отображения логотипа платежной системы.
  *
- * Отображает элемент платежной системы либо как ссылку (если указана внешняя 
- * ссылка), либо как статичный элемент. Используется в блоке списка 
- * поддерживаемых платежных систем. Стилизация применяется на основе имени 
+ * Отображает элемент платежной системы либо как ссылку (если указана внешняя
+ * ссылка), либо как статичный элемент. Используется в блоке списка
+ * поддерживаемых платежных систем. Стилизация применяется на основе имени
  * системы, преобразованного в нижний регистр.
- *
- * @example
- * // Отобразит Visa как ссылку (тег `a`)
- * <PaySystemItem system={{ displayName: "Visa", link: "https://visa.com" }} />
- *
- * @example
- * // Отобразит Mir как статичный элемент (тег `div`)
- * <PaySystemItem system={{ displayName: "Mir", link: "" }} />
  */
 export function PaySystemItem({ system }: IPaySystemItemProps) {
 	const className = classNames(
@@ -57,4 +51,3 @@ export function PaySystemItem({ system }: IPaySystemItemProps) {
 		/>
 	);
 }
-

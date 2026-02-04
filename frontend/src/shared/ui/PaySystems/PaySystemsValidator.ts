@@ -1,10 +1,5 @@
 import type { IPaySystemProps, IPaySystemsVariants } from "./types";
 
-/**
- * Множество допустимых значений для типа {@link IPaySystemsVariants}.
- *
- * Используется для валидации строковых значений при парсинге данных.
- */
 const VALID_SYSTEMS = new Set<IPaySystemsVariants>([
 	"PayPal",
 	"Visa",
@@ -17,16 +12,6 @@ const VALID_SYSTEMS = new Set<IPaySystemsVariants>([
 /**
  * Проверяет, является ли переданная строка допустимым значением платежной
  * системы.
- *
- * @param str - Строка для проверки.
- * @returns `true`, если строка соответствует одному из допустимых значений
- * ({@link IPaySystemsVariants}), иначе `false`.
- *
- * @example
- * ```ts
- * if (isValidPaySystemVariant("Visa")) {
- *   // безопасно использовать как IPaySystemsVariants
- * }
  * ```
  */
 export const isValidPaySystemVariant = (
@@ -44,17 +29,6 @@ export const isValidPaySystemVariant = (
  *   - `displayName` (строка, входящая в {@link IPaySystemsVariants}),
  *   - `link` (строка),
  *   - `visible` (булево значение).
- *
- * @param data - Необработанные данные (например, результат парсинга JSON).
- * @returns Массив валидных объектов {@link IPaySystemProps}.
- * @throws {Error} Если данные не являются массивом или содержат невалидные
- * элементы.
- *
- * @example
- * ```ts
- * import payData from './pay-systems.json';
- *
- * const systems = parsePaySystems(payData);
  * ```
  */
 export const parsePaySystems = (data: unknown): IPaySystemProps[] => {

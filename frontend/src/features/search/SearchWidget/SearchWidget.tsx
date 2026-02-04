@@ -6,11 +6,7 @@ import { useNavigateWithScrollReset } from "@/shared/hooks";
 
 import "./SearchWidget.scss";
 
-/**
- * Интерфейс, описывающий свойства компонента {@link SearchWidget}.
- */
 interface ISearchWidgetProps {
-	/** Дополнительные классы. */
 	classes?: string;
 }
 
@@ -27,13 +23,12 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 
 	const navigate = useNavigateWithScrollReset();
 
-	// Функция закрытия виджета
+	// ФУНКЦИИ И ОБРАБОТЧИКИ
 	const collapseWidget = useCallback(() => {
 		setIsExpanded(false);
 		setSearchQuery("");
 	}, []);
 
-	// Функция выполнения поиска
 	const performSearch = useCallback(
 		(query: string) => {
 			if (!query.trim()) return;
@@ -48,7 +43,6 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		[collapseWidget, navigate],
 	);
 
-	// Обработчик клика по иконке поиска
 	const handleExpanderClick = useCallback(() => {
 		if (isExpanded && searchQuery.trim()) {
 			performSearch(searchQuery);
@@ -57,7 +51,6 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		}
 	}, [isExpanded, performSearch, searchQuery]);
 
-	// Обработчик клика вне виджета
 	const handleClickOutside = useCallback(
 		(event: MouseEvent | TouchEvent) => {
 			if (
@@ -71,22 +64,18 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		[collapseWidget],
 	);
 
-	// Обработчик изменения значения поиска
 	const handleSearchChange = useCallback(
 		(value: string) => setSearchQuery(value),
 		[],
 	);
 
-	// Обработчик очистки значения поиска
 	const handleSearchClear = useCallback(() => setSearchQuery(""), []);
 
-	// Обработчик отправки формы
 	const handleSearchSubmit = useCallback(
 		() => performSearch(searchQuery),
 		[performSearch, searchQuery],
 	);
 
-	// Обработчик нажатия клавиши на клавиатуре
 	const handleSearchKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === "Escape") collapseWidget();
@@ -94,6 +83,7 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		[collapseWidget],
 	);
 
+	// ЭФФЕКТЫ
 	useEffect(() => {
 		if (!isExpanded) return;
 
@@ -106,7 +96,7 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		};
 	}, [handleClickOutside, isExpanded]);
 
-	// Конфигурация формы поиска
+	// КОНФИГИ И АТРИБУТЫ
 	const searchFormConfig: ISearchFormProps = {
 		value: searchQuery,
 		handlers: {
@@ -121,7 +111,6 @@ export function SearchWidget({ classes }: ISearchWidgetProps) {
 		},
 	};
 
-	// Атрибуты кнопки поиска
 	const searchBtnAttrs = {
 		className: classNames("search-widget__btn", classes),
 		"data-id": "search-expander",

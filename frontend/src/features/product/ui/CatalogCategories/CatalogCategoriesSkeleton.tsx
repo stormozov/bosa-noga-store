@@ -1,28 +1,23 @@
-/**
- * Интерфейс, описывающий свойства компонента {@link CatalogCategoriesSkeleton}.
- */
+const currentDate = new Date().toLocaleString("en-US", { hour: "numeric" });
+
 interface ICatalogCategoriesSkeletonProps {
-	/** Количество категорий, которые нужно отобразить. */
-	count: number;
+	count?: number;
 }
 
 /**
  * Компонент-заглушка (скелетон) для отображения загрузки категорий в каталоге.
  *
  * Отображает указанное количество элементов-заглушек, имитирующих элементы
- * категорий. Используется, пока данные о категориях загружаются.
- *
- * @example
- * <CatalogCategoriesSkeleton count={6} />
+ * категорий.
  */
 export function CatalogCategoriesSkeleton({
-	count,
+	count = 1,
 }: ICatalogCategoriesSkeletonProps) {
 	return (
 		<div className="catalog-categories__skeleton-container">
 			{Array.from({ length: count }).map((_, idx) => (
 				<div
-					key={`skeleton-${idx}`}
+					key={`skeleton-${idx}-${currentDate}`}
 					className="catalog-categories__skeleton-item"
 				/>
 			))}

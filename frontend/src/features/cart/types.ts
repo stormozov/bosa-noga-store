@@ -29,8 +29,6 @@ export interface ICartItem {
 }
 
 /**
- * Интерфейс состояния корзины.
- *
  * Описывает полную структуру состояния корзины в Redux-хранилище.
  */
 export interface ICartState {
@@ -46,20 +44,13 @@ export interface ICartState {
 
 /**
  * Тип данных для действия добавления товара в корзину.
- *
- * Наследует все поля {@link ICartItem} кроме `count` и `total`, добавляет
- * опциональное поле `count` (если не указано — используется значение
- * по умолчанию).
  */
 export type AddToCartPayload = Omit<ICartItem, "count" | "total"> & {
-	/** Количество товара (опционально, по умолчанию 1) */
 	count?: number;
 };
 
 /**
  * Тип данных для действия удаления товара из корзины.
- *
- * Содержит ключевые поля для идентификации товара.
  */
 export type RemoveFromCartPayload = {
 	/** Идентификатор товара */
@@ -71,8 +62,6 @@ export type RemoveFromCartPayload = {
 
 /**
  * Тип данных для действия изменения количества товара в корзине.
- *
- * Содержит информацию для идентификации товара и новое количество.
  */
 export type UpdateQuantityPayload = {
 	/** Идентификатор товара */
@@ -87,8 +76,6 @@ export type UpdateQuantityPayload = {
 
 /**
  * Тип данных для действия восстановления корзины.
- *
- * Представляет собой массив элементов корзины.
  */
 export type RestoreCartPayload = ICartItem[];
 
@@ -111,8 +98,6 @@ export interface RehydrateAction {
 
 /**
  * Интерфейс утилиты для расчёта итоговых значений корзины.
- *
- * Описывает структуру объекта с результатами расчёта итогов.
  */
 export interface ICalculateTotalsUtils {
 	/** Итоговая сумма всех товаров */

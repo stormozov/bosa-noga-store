@@ -15,7 +15,6 @@ export const cartLogger: Middleware<object, RootState> =
 			console.group(`Cart Action: ${action.type}`);
 			console.log("Previous state:", store.getState().cart);
 
-			// Безопасный доступ к payload
 			if ("payload" in action && action.payload !== undefined) {
 				console.log("Action payload:", action.payload);
 			}

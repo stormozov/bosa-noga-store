@@ -5,9 +5,6 @@ import { MainBanner } from "@/shared/ui";
 
 import "./PageNotFound.scss";
 
-/**
- * Компонент страницы 404.
- */
 export default function PageNotFound() {
 	return (
 		<>

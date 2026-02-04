@@ -1,34 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { get } from "../core";
 import type { IApiOptions, IUseGetReturns } from "../types";
 
-/**
- * Хук для выполнения GET-запросов к API с управлением состоянием.
- *
- * @description
- * Предоставляет данные, флаг загрузки, возможную ошибку и функцию для
- * повторного запроса. Гарантирует отсутствие утечек памяти, отменяя обновление
- * состояния, если компонент был размонтирован (через `useRef`-флаг `isMounted`).
- *
- * @template T - Тип данных, ожидаемых в ответе от API. Используется для
- * типизации `data`.
- *
- * @param {string | null} url - URL API-эндпоинта для GET-запроса. Если `null`,
- * запрос не выполняется.
- * @param {IApiOptions} [options] - Дополнительные параметры запроса: заголовки,
- * таймаут и др.
- *
- * @returns {IUseGetReturns<T>} Объект с полями, описанными
- * в {@link IUseGetReturns}.
- *
- * @example
- * const { data, loading, error, refetch } = useApiGet<User[]>("/api/users");
- *
- * if (loading) return <ContentPreloader />;
- * if (error) return <ErrorMessage message={error.message} />;
- *
- * return <UserList users={data} onRefresh={refetch} />;
- */
 export const useApiGet = <T>(
 	url: string | null,
 	options?: IApiOptions,
@@ -36,6 +10,7 @@ export const useApiGet = <T>(
 	const [data, setData] = useState<T | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
+
 	const isMounted = useRef(true);
 
 	const fetchData = useCallback(async () => {

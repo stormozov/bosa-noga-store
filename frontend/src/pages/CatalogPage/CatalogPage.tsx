@@ -4,9 +4,6 @@ import { MainBanner } from "@/shared/ui";
 
 import "./CatalogPage.scss";
 
-/**
- * Компонент страницы каталога.
- */
 export default function CatalogPage() {
 	return (
 		<>
